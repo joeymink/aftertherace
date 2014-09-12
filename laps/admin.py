@@ -1,3 +1,4 @@
 from django.contrib import admin
+from laps.models import Machine
 
-# Register your models here.
+admin.site.register(Machine)

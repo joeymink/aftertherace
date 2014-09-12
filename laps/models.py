@@ -5,6 +5,8 @@ class Machine(models.Model):
 	make = models.CharField(max_length=100)
 	model = models.CharField(max_length=100)
 	year = models.IntegerField()
+	def __unicode__(self):
+		return self.name
 
 class MachineConfiguration(models.Model):
 	name = models.CharField(max_length=100)
