@@ -12,7 +12,7 @@ class MachineConfiguration(models.Model):
 	name = models.CharField(max_length=100)
 	machine = models.ForeignKey(Machine)
 
-class ConfigurationItem(models.Model):
+class ConfigurationAttribute(models.Model):
 	key = models.CharField(max_length=100)
 	value = models.CharField(max_length=100)
 	machine_config = models.ForeignKey(MachineConfiguration)
