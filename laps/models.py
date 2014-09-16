@@ -10,12 +10,12 @@ class Machine(models.Model):
 
 class MachineConfiguration(models.Model):
 	name = models.CharField(max_length=100)
-	machine = models.ForeignKey(Machine)
+	machine = models.ForeignKey(Machine, related_name='configurations')
 
 class ConfigurationAttribute(models.Model):
 	key = models.CharField(max_length=100)
 	value = models.CharField(max_length=100)
-	machine_config = models.ForeignKey(MachineConfiguration)
+	machine_config = models.ForeignKey(MachineConfiguration, related_name='attributes')
 
 class Race(models.Model):
 	name = models.CharField(max_length=100)

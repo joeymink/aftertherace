@@ -23,7 +23,7 @@ class MachineConfigurationTest(TestCase):
 
 		# Test reverse relationship
 		readMachine = Machine.objects.get(id=m.id)
-		self.assertTrue(readMachine.machineconfiguration_set.all()[0].name == 'My Config')
+		self.assertTrue(readMachine.configurations.all()[0].name == 'My Config')
 
 class ConfigurationAttributeTest(TestCase):
 
@@ -39,6 +39,6 @@ class ConfigurationAttributeTest(TestCase):
 		self.assertTrue(readConfigAttr.machine_config.machine.model == 'EX250')
 
 		readMachine = Machine.objects.get(id=m.id)
-		self.assertTrue(readMachine.machineconfiguration_set.all()[0].configurationattribute_set.all()[0].value == 'non-oring 520')
+		self.assertTrue(readMachine.configurations.all()[0].attributes.all()	[0].value == 'non-oring 520')
 
 
