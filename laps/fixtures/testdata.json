@@ -1,0 +1,56 @@
+[
+	{
+		"model" : "laps.Racer",
+		"pk" : 1,
+		"fields" : {
+			"first" : "Some",
+			"last" : "Guy"
+		}
+	},
+
+	{
+		"model" : "laps.Track",
+		"pk" : 1,
+		"fields" : {
+			"name" : "Awesome Circuit"
+		}
+	},
+
+	{
+		"model" : "laps.Race",
+		"pk" : 1,
+		"fields" : {
+			"name" : "Race 1",
+			"track" : 1,
+			"date" : "2011-09-01T13:20:30+03:00"
+		}
+	},
+
+	{
+		"model" : "laps.Lap",
+		"fields" : {
+			"race" : 1,
+			"num" : 1,
+			"time" : "1:01:000",
+			"racer" : 1
+		}
+	},
+	{
+		"model" : "laps.Lap",
+		"fields" : {
+			"race" : 1,
+			"num" : 2,
+			"time" : "1:02:000",
+			"racer" : 1
+		}
+	},
+	{
+		"model" : "laps.Lap",
+		"fields" : {
+			"race" : 1,
+			"num" : 3,
+			"time" : "1:03:000",
+			"racer" : 1
+		}
+	}
+]

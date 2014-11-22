@@ -36,7 +36,7 @@ class Racer(models.Model):
 
 class Race(models.Model):
 	name = models.CharField(max_length=100)
-	machine_config = models.ForeignKey(MachineConfiguration)
+	machine_config = models.ForeignKey(MachineConfiguration, blank=True, null=True)
 	date = models.DateTimeField()
 	track = models.ForeignKey(Track)
 
