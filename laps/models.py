@@ -23,6 +23,8 @@ class ConfigurationAttribute(models.Model):
 
 class Track(models.Model):
 	name=models.CharField(max_length=100)
+	def __unicode__(self):
+		return self.name
 
 # Racer
 
@@ -31,6 +33,8 @@ class Racer(models.Model):
 	last = models.CharField(max_length=100)
 	middle = models.CharField(max_length=100)
 	dob = models.DateTimeField(null=True)
+	def __unicode__(self):
+		return ' '.join([self.first, self.middle, self.last])
 
 # Race
 
@@ -39,6 +43,8 @@ class Race(models.Model):
 	machine_config = models.ForeignKey(MachineConfiguration, blank=True, null=True)
 	date = models.DateTimeField()
 	track = models.ForeignKey(Track)
+	def __unicode__(self):
+		return self.track.name
 
 class Lap(models.Model):
 	race = models.ForeignKey(Race, related_name='laps')
