@@ -1,7 +1,7 @@
 {% if races %}
     <ul>
     {% for race in races %}
-        <li><a href="/races/{{ race.id }}/">{{ race.track.name }}</a></li>
+        <li><a href="{% url 'laps:race' race.id %}">{{ race.track.name }}</a></li>
     {% endfor %}
     </ul>
 {% else %}
