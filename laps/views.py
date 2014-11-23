@@ -1,3 +1,7 @@
+from laps.models import Race
+from django.http import HttpResponse
 from django.shortcuts import render
 
-# Create your views here.
+def races(request):
+	races = Race.objects.all()
+	return render(request, 'laps/races.html', {'races': races })
