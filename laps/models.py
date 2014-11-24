@@ -41,7 +41,7 @@ class Racer(models.Model):
 class Race(models.Model):
 	name = models.CharField(max_length=100)
 	machine_config = models.ForeignKey(MachineConfiguration, blank=True, null=True)
-	date = models.DateTimeField()
+	date = models.DateField()
 	track = models.ForeignKey(Track)
 	def __unicode__(self):
 		return self.track.name
