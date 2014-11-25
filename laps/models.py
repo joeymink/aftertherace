@@ -3,7 +3,7 @@ from django.db import models
 # Machine
 
 class Machine(models.Model):
-	name = models.CharField(max_length=100)
+	name = models.CharField(max_length=100, unique=True)
 	make = models.CharField(max_length=100)
 	model = models.CharField(max_length=100)
 	year = models.IntegerField()
@@ -13,11 +13,18 @@ class Machine(models.Model):
 class MachineConfiguration(models.Model):
 	name = models.CharField(max_length=100)
 	machine = models.ForeignKey(Machine, related_name='configurations')
+	def __unicode__(self):
+		return "%s (%s)" % (self.name, self. machine.name)
 
 class ConfigurationAttribute(models.Model):
 	key = models.CharField(max_length=100)
 	value = models.CharField(max_length=100)
-	machine_config = models.ForeignKey(MachineConfiguration, related_name='attributes')
+	machine_configurations = models.ManyToManyField(MachineConfiguration)
+	def __unicode__(self):
+		return "%s: %s" % (self.key, self.value)
+	
+	class Meta:
+		unique_together = ('key', 'value')
 
 # Track
 
