@@ -55,6 +55,15 @@ class Race(models.Model):
 	def __unicode__(self):
 		return self.track.name
 
+	class Meta:
+		unique_together = ('name', 'date', 'track', 'organization')
+
+def get_or_create_race(name=None, date=None, track=None, organization=None, machine_config=None, conditions=None):
+	q = Race.objects.filter(name=name, date=date, track=track, organization=organization)
+	if len(q) > 0:
+		return q[0]
+	return Race.objects.create(name=name, date=date, track=track, organization=organization, machine_config=machine_config, conditions=conditions)
+
 class Lap(models.Model):
 	race = models.ForeignKey(Race, related_name='laps')
 	num = models.IntegerField()
