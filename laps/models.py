@@ -50,6 +50,8 @@ class Race(models.Model):
 	machine_config = models.ForeignKey(MachineConfiguration, blank=True, null=True)
 	date = models.DateField()
 	track = models.ForeignKey(Track)
+	organization = models.CharField(max_length=100)
+	conditions = models.CharField(max_length=100)
 	def __unicode__(self):
 		return self.track.name
 

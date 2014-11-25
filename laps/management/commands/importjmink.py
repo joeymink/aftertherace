@@ -19,11 +19,6 @@ class Command(BaseCommand):
 				if not(isfirstrow):
 					track, created = Track.objects.get_or_create(name=row[index['Track']])
 
-					raw_date = row[index['Date']]
-					month_day_year = raw_date.split('/')
-					yyyy_mm_dd = "%s-%s-%s" % (month_day_year[2], month_day_year[0], month_day_year[1])
-					race, created = Race.objects.get_or_create(name=row[index['Event']], date=yyyy_mm_dd, track=track)
-
 					raw_bike = row[index['Bike']]
 					if raw_bike == '2009 Kawasaki Ninja 250':
 						bike, created = Machine.objects.get_or_create(name="Ninjette", make="Kawasaki", model="Ninja 250", year=2009)
@@ -45,6 +40,13 @@ class Command(BaseCommand):
 					attr.machine_configurations.add(config)
 
 					# TODO: dedupe equivalent configurations?
+
+					raw_date = row[index['Date']]
+					month_day_year = raw_date.split('/')
+					yyyy_mm_dd = "%s-%s-%s" % (month_day_year[2], month_day_year[0], month_day_year[1])
+					race, created = Race.objects.get_or_create(name=row[index['Event']], date=yyyy_mm_dd, track=track, machine_config=config, organization=row[index['Organization']], conditions=row[index['Weather']])
+
+					
 				else:
 					isfirstrow = False
 				counter = counter + 1
