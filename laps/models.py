@@ -67,5 +67,5 @@ def get_or_create_race(name=None, date=None, track=None, organization=None, mach
 class Lap(models.Model):
 	race = models.ForeignKey(Race, related_name='laps')
 	num = models.IntegerField()
-	time = models.CharField(max_length=100)	# TODO: need to learn how best to capture this
+	time = models.DecimalField(max_digits=6, decimal_places=3)
 	racer = models.ForeignKey(Racer, related_name='laps')

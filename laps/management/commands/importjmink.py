@@ -1,5 +1,6 @@
 from django.core.management.base import BaseCommand
 import csv, os
+from decimal import Decimal
 from laps.models import MachineConfiguration, ConfigurationAttribute, Lap, Machine, Race, Racer, Track, get_or_create_race
 
 class Command(BaseCommand):
@@ -47,7 +48,11 @@ class Command(BaseCommand):
 
 					race = get_or_create_race(name=row[index['Event']], date=yyyy_mm_dd, track=track, machine_config=config, organization=row[index['Organization']], conditions=row[index['Weather']])
 
-					lap = Lap.objects.create(race=race, num=row[index['Lap number']], time=row[index['Time']], racer=racer)
+					raw_laptime = row[index['Time']]
+					first_split = raw_laptime.split(':')
+					second_split = first_split[1].split('.')
+					laptime = Decimal(first_split[0]) * Decimal(60) + Decimal(second_split[0]) + Decimal(0.001) * Decimal(second_split[1])
+					lap = Lap.objects.create(race=race, num=row[index['Lap number']], time=laptime, racer=racer)
 				else:
 					isfirstrow = False
 				counter = counter + 1
