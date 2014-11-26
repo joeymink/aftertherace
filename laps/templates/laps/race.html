@@ -1,7 +1,9 @@
+{% load lap_extras %}
+
 <h1>{{ race.track.name }}</h1>
 <h2>Laps</h2>
 <ol>
 {% for lap in race.laps.all %}
-    <li>{{ lap.time }}</li>
+    <li>{{ lap.time|format_lap_time }}</li>
 {% endfor %}
 </ol>
