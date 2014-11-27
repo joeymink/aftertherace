@@ -1,3 +1,5 @@
+{% include "laps/header.html" %}
+
 {% load lap_extras %}
 
 <h1>{{ race.track.name }}</h1>
@@ -7,3 +9,5 @@
     <li>{{ lap.time|format_lap_time }}</li>
 {% endfor %}
 </ol>
+
+{% include "laps/footer.html" %}
