@@ -6,22 +6,26 @@
   <li class="active">races</li>
 </ol>
 
-<h1>Races <small>todo:racer</small></h1>
+<h1>Races <small>joeymink</small></h1> <!-- TODO: -->
 
-{% if races_by_date %}
-    {% for year, race_dates in races_by_date.items %}
+{% if races %}
+    {% for year in years %}
     	<h2><span class="label label-default">{{ year }}</span></h2>
 		<div class="row">
-			{% for race_date, races in race_dates.items %}
-				<div class="col-md-11 col-md-offset-1"><strong>{{ race_date|date:"M d" }}</strong></div>
-				{% for race in races %}
-					<div class="col-md-10 col-md-offset-2">
-						<a href="{% url 'laps:race' race.id %}">
-							 {{ race.name }} with {{ race.organization }}
-						</a>
-						[ {{ race.track.name }} ]
-					</div>
-				{% endfor %}
+			{% for date in dates %}
+				{% if date.year == year %}
+					<div class="col-md-11 col-md-offset-1"><strong>{{ date|date:"M d" }}</strong></div>
+					{% for race in races %}
+						{% if race.date == date %}
+							<div class="col-md-10 col-md-offset-2">
+								<a href="{% url 'laps:race' race.id %}">
+							 		{{ race.name }} with {{ race.organization }}
+								</a>
+								[ {{ race.track.name }} ]
+							</div>
+						{% endif %}
+					{% endfor %}
+				{% endif %}
 			{% endfor %}
         </div>
     {% endfor %}
