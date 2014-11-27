@@ -19,7 +19,7 @@ class MachineConfiguration(models.Model):
 class ConfigurationAttribute(models.Model):
 	key = models.CharField(max_length=100)
 	value = models.CharField(max_length=100)
-	machine_configurations = models.ManyToManyField(MachineConfiguration)
+	machine_configurations = models.ManyToManyField(MachineConfiguration, related_name='attributes')
 	def __unicode__(self):
 		return "%s: %s" % (self.key, self.value)
 	
@@ -57,6 +57,16 @@ class Race(models.Model):
 
 	class Meta:
 		unique_together = ('name', 'date', 'track', 'organization')
+
+	def best_lap_time(self):
+		best = None
+		for lap in self.laps.values():
+			if best is None:
+				best = lap['time']
+			elif lap['time'] < best:
+				best = lap['time']
+		return best
+
 
 def get_or_create_race(name=None, date=None, track=None, organization=None, machine_config=None, conditions=None):
 	q = Race.objects.filter(name=name, date=date, track=track, organization=organization)

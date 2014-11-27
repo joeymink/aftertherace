@@ -2,12 +2,48 @@
 
 {% load lap_extras %}
 
-<h1>{{ race.track.name }}</h1>
-<h2>Laps</h2>
-<ol>
-{% for lap in race.laps.all %}
-    <li>{{ lap.time|format_lap_time }}</li>
-{% endfor %}
+<ol class="breadcrumb">
+  <li><a href="#">home</a></li>
+  <li><a href="#">joeymink</a></li>
+  <li><a href="#">races</a></li>
+  <li class="active">this race</li>
 </ol>
+
+<h1>{{ race.name }} with {{ race.organization }} <small><span class="glyphicon glyphicon-map-marker" aria-hidden="true">
+</span>{{ race.track.name }}</small></h1>
+<h3>{{ race.date }} <small>conditions: {{ race.conditions }}</small></h3>
+<!-- TODO: Conditions -->
+<div class="row">
+	<div class="col-md-6">
+		<h2>Laps</h2>
+		<table class="table table-striped table-hover">
+			<tr>
+				<th>Lap</th>
+				<th>Time</th>
+			</tr>
+		{% for lap in race.laps.all %}
+			{% if race.best_lap_time == lap.time %}
+				<tr class="success">
+			{% else %}
+				<tr>
+			{% endif %}
+				<td>{{ lap.num }}</td>
+		    	<td>{{ lap.time|format_lap_time }}</td>
+		    </tr>
+		{% endfor %}
+		</table>
+	</div>
+	<div class="col-md-6">
+		<h2>{{ race.machine_config.machine.name }}</h2>
+		<table class="table">
+		{% for attr in race.machine_config.attributes.values %}
+			<tr>
+				<td><strong>{{ attr.key }}</strong></td>
+				<td>{{ attr.value }}</td>
+			</tr>
+		{% endfor %}
+		</table>
+	</div>
+</div>
 
 {% include "laps/footer.html" %}
