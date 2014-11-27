@@ -17,11 +17,13 @@
 					<div class="col-md-11 col-md-offset-1"><strong>{{ date|date:"M d" }}</strong></div>
 					{% for race in races %}
 						{% if race.date == date %}
-							<div class="col-md-10 col-md-offset-2">
+							<div class="col-md-3 col-md-offset-2">
 								<a href="{% url 'laps:race' race.id %}">
 							 		{{ race.name }} with {{ race.organization }}
 								</a>
-								[ {{ race.track.name }} ]
+							</div>
+							<div class="col-md-7">
+								<span class="glyphicon glyphicon-map-marker" aria-hidden="true"></span> {{ race.track.name }}
 							</div>
 						{% endif %}
 					{% endfor %}
