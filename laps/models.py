@@ -10,6 +10,33 @@ class Machine(models.Model):
 	def __unicode__(self):
 		return self.name
 
+	def num_laps(self):
+		return Lap.objects.filter(race__machine_config__machine=self).count()
+
+	def races(self):
+		return Race.objects.filter(machine_config__machine=self).order_by('date')
+
+	def first_race(self):
+		return Lap.objects.filter(race__machine_config__machine=self).order_by('race__date')[0].race
+
+	def last_race(self):
+		return Lap.objects.filter(race__machine_config__machine=self).order_by('-race__date')[0].race
+
+	def unique_configurations(self):
+		config_dict = {}
+		config_list = []
+		for c in self.configurations.all():
+			attrs = ConfigurationAttribute.objects.filter(machine_configurations__in=[c.id]).order_by('key')
+			unique_key = ""
+			for a in attrs:
+				unique_key="%s%s%s" % (unique_key, a.key, a.value)
+			if not(unique_key in config_dict):
+				config_dict[unique_key] = ""
+				config_list.append(attrs)
+		return config_list
+
+
+
 class MachineConfiguration(models.Model):
 	name = models.CharField(max_length=100)
 	machine = models.ForeignKey(Machine, related_name='configurations')
@@ -47,7 +74,7 @@ class Racer(models.Model):
 
 class Race(models.Model):
 	name = models.CharField(max_length=100)
-	machine_config = models.ForeignKey(MachineConfiguration, blank=True, null=True)
+	machine_config = models.ForeignKey(MachineConfiguration, blank=True, null=True, related_name='races')
 	date = models.DateField()
 	track = models.ForeignKey(Track)
 	organization = models.CharField(max_length=100)

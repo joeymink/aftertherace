@@ -34,7 +34,12 @@
 		</table>
 	</div>
 	<div class="col-md-6">
-		<h2>{{ race.machine_config.machine.name }}</h2>
+		<h2>
+			{{ race.machine_config.machine.name }}
+			<a href="{% url 'laps:machine' race.machine_config.machine.id %}">
+				<small><span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span></small>
+			</a>
+		</h2>
 		<table class="table">
 		{% for attr in race.machine_config.attributes.values %}
 			<tr>

@@ -1,4 +1,4 @@
-from laps.models import Race
+from laps.models import Machine, Race
 from django.shortcuts import get_object_or_404, render
 
 def races(request):
@@ -20,3 +20,7 @@ def races(request):
 def race(request, race_id):
 	race = get_object_or_404(Race, pk=race_id)
 	return render(request, 'laps/race.html', {'race': race })
+
+def machine(request, machine_id):
+	machine = get_object_or_404(Machine, pk=machine_id)
+	return render(request, 'laps/machine.html', {'machine': machine })

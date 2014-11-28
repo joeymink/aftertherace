@@ -1,0 +1,43 @@
+{% include "laps/header.html" %}
+
+{% load lap_extras %}
+
+<ol class="breadcrumb">
+  <li><a href="#">home</a></li>
+  <li><a href="#">joeymink</a></li>
+  <li><a href="#">machines</a></li>
+  <li class="active">{{ machine.name }}</li>
+</ol>
+
+<h1>{{ machine.name }}</h1>
+<div class="row">
+	<div class="col-md-4">
+		<table class="table">
+			<tr>
+				<th>Year</th>
+				<td>{{ machine.year }}</td>
+			</tr>
+			<tr>
+				<th>Make</th>
+				<td>{{ machine.make }}</td>
+			</tr>
+			<tr>
+				<th>Make</th>
+				<td>{{ machine.model }}</td>
+			</tr>
+		</table>
+	</div>
+	<div class="col-md-8">
+		<p><em>Raced by joeymink from {{ machine.first_race.date }} - {{ machine.last_race.date }}</em></p>
+		<p><em>{{ machine.num_laps }} laps</em></p>
+		<p><em>{{ machine.races.count }} <a href="{% url 'laps:races' %}">races</a></em></p>
+	</div>
+</div>
+
+<h2>Configurations</h2>
+{% for config in machine.unique_configurations %}
+____<br/>
+	{% for attr in config %}
+		<p>{{ attr.key }} - {{ attr.value }}</p>
+	{% endfor %}
+{% endfor %}
