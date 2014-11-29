@@ -34,25 +34,21 @@
 		<p><em>{{ machine.tracks.count }} tracks ...</em></p>
 	</div>
 </div>
-<hr/>
 
-<h2>Events</h2>
-<div class="row">
-	<div class="col-md-4">
-		<table class="table">
-			{% for org, events in machine.events_by_organization.items %}
-				<tr>
-					<th>{{ org }}</th>
-					<td>{{ events |join:", " }}</td>
-				</tr>
-			{% endfor %}
-		</table>
-	</div>
-	<div class="col-md-8">
-
-	</div>
+<div class="panel panel-default">
+	<div class="panel-heading">Events</div>
+	<table class="table">
+		{% for org, events in machine.events_by_organization.items %}
+			<tr>
+				<th>{{ org }}</th>
+				<td>{{ events |join:", " }}</td>
+			</tr>
+		{% endfor %}
+	</table>
 </div>
-	<h2>Configurations</h2>
+
+<div class="panel panel-default">
+	<div class="panel-heading">Configurations</div>
 	<table class="table">
 		<tr>
 			{% for key in machine.unique_configuration_keys %}
