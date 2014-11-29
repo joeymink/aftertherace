@@ -24,3 +24,7 @@ def race(request, race_id):
 def machine(request, machine_id):
 	machine = get_object_or_404(Machine, pk=machine_id)
 	return render(request, 'laps/machine.html', {'machine': machine })
+
+def machines(request):
+	machines = Machine.objects.all()
+	return render(request, 'laps/machines.html', {'machines': machines })	

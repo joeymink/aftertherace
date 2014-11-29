@@ -1,0 +1,25 @@
+{% include "laps/header.html" %}
+
+<ol class="breadcrumb">
+  <li><a href="#">home</a></li>
+  <li class="active">machines</li>
+</ol>
+
+<h1>Machines</h1>
+
+{% if machines %}
+	{% for machine in machines %}
+			<div class="col-md-3 col-md-offset-2">
+				<a href="{% url 'laps:machine' machine.id %}">
+			 		{{ machine.name }}
+				</a>
+			</div>
+			<div class="col-md-7">
+				<span class="glyphicon glyphicon-map-marker" aria-hidden="true"></span> blar
+			</div>
+	{% endfor %}
+{% else %}
+    <p>No machines are available.</p>
+{% endif %}
+
+{% include "laps/footer.html" %}

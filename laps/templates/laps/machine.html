@@ -4,8 +4,7 @@
 
 <ol class="breadcrumb">
   <li><a href="#">home</a></li>
-  <li><a href="#">joeymink</a></li>
-  <li><a href="#">machines</a></li>
+  <li><a href="{% url 'laps:machines' %}">machines</a></li>
   <li class="active">{{ machine.name }}</li>
 </ol>
 
@@ -29,9 +28,9 @@
 	</div>
 	<div class="col-md-8">
 		<p><em>Lap data spans {{ machine.first_race.date }} - {{ machine.last_race.date }} ...</em></p>
-		<p><em>{{ machine.num_laps }} laps ...</em></p>
-		<p><em>{{ machine.races.count }} <a href="{% url 'laps:races' %}">races ...</a></em></p>
 		<p><em>{{ machine.tracks.count }} tracks ...</em></p>
+		<p><em>{{ machine.races.count }} <a href="{% url 'laps:races' %}">races ...</a></em></p>
+		<p><em>{{ machine.num_laps }} laps ...</em></p>
 	</div>
 </div>
 

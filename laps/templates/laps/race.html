@@ -4,9 +4,8 @@
 
 <ol class="breadcrumb">
   <li><a href="#">home</a></li>
-  <li><a href="#">joeymink</a></li>
-  <li><a href="#">races</a></li>
-  <li class="active">this race</li>
+  <li><a href="{% url 'laps:races' %}">races</a></li>
+  <li class="active">{{ race.name }}</li>
 </ol>
 
 <h1>{{ race.name }} with {{ race.organization }} <small><span class="glyphicon glyphicon-map-marker" aria-hidden="true">
