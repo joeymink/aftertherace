@@ -28,16 +28,46 @@
 		</table>
 	</div>
 	<div class="col-md-8">
-		<p><em>Raced by joeymink from {{ machine.first_race.date }} - {{ machine.last_race.date }}</em></p>
-		<p><em>{{ machine.num_laps }} laps</em></p>
-		<p><em>{{ machine.races.count }} <a href="{% url 'laps:races' %}">races</a></em></p>
+		<p><em>Lap data spans {{ machine.first_race.date }} - {{ machine.last_race.date }} ...</em></p>
+		<p><em>{{ machine.num_laps }} laps ...</em></p>
+		<p><em>{{ machine.races.count }} <a href="{% url 'laps:races' %}">races ...</a></em></p>
+		<p><em>{{ machine.tracks.count }} tracks ...</em></p>
 	</div>
 </div>
+<hr/>
 
-<h2>Configurations</h2>
-{% for config in machine.unique_configurations %}
-____<br/>
-	{% for attr in config %}
-		<p>{{ attr.key }} - {{ attr.value }}</p>
-	{% endfor %}
-{% endfor %}
+<h2>Events</h2>
+<div class="row">
+	<div class="col-md-4">
+		<table class="table">
+			{% for org, events in machine.events_by_organization.items %}
+				<tr>
+					<th>{{ org }}</th>
+					<td>{{ events |join:", " }}</td>
+				</tr>
+			{% endfor %}
+		</table>
+	</div>
+	<div class="col-md-8">
+
+	</div>
+</div>
+	<h2>Configurations</h2>
+	<table class="table">
+		<tr>
+			{% for key in machine.unique_configuration_keys %}
+				<th>{{ key.key }}</th>
+			{% endfor %}
+		</tr>
+		{% for config in machine.unique_configurations %}
+			<tr>
+			{% for key in machine.unique_configuration_keys %}
+				{% for attr in config %}
+					{% if attr.key == key.key %}
+						<td>{{ attr.value }}</td>
+					{% endif %}
+				{% endfor %}
+			{% endfor %}
+			</tr>
+		{% endfor %}
+	</table>

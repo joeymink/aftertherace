@@ -22,7 +22,16 @@ class Machine(models.Model):
 	def last_race(self):
 		return Lap.objects.filter(race__machine_config__machine=self).order_by('-race__date')[0].race
 
+	def unique_configuration_keys(self):
+		keys = []
+		for c in self.configurations.all():
+			for key in ConfigurationAttribute.objects.filter(machine_configurations__in=[c.id]).order_by('key').values('key').distinct():
+				if not(key in keys):
+					keys.append(key)
+		return keys
+
 	def unique_configurations(self):
+		# find unique machine configurations:
 		config_dict = {}
 		config_list = []
 		for c in self.configurations.all():
@@ -33,9 +42,21 @@ class Machine(models.Model):
 			if not(unique_key in config_dict):
 				config_dict[unique_key] = ""
 				config_list.append(attrs)
+		print config_list
 		return config_list
 
+	def events_by_organization(self):
+		return_dict = {}
+		races = self.races()
+		for race in races:
+			if not(race.organization in return_dict):
+				return_dict[race.organization] = []
+			if not(race.name in return_dict[race.organization]):
+				return_dict[race.organization].append(race.name)
+		return return_dict
 
+	def tracks(self):
+		return Track.objects.filter(races__machine_config__machine=self).order_by('name').distinct()
 
 class MachineConfiguration(models.Model):
 	name = models.CharField(max_length=100)
@@ -56,7 +77,7 @@ class ConfigurationAttribute(models.Model):
 # Track
 
 class Track(models.Model):
-	name=models.CharField(max_length=100)
+	name=models.CharField(max_length=100, unique=True)
 	def __unicode__(self):
 		return self.name
 
@@ -76,7 +97,7 @@ class Race(models.Model):
 	name = models.CharField(max_length=100)
 	machine_config = models.ForeignKey(MachineConfiguration, blank=True, null=True, related_name='races')
 	date = models.DateField()
-	track = models.ForeignKey(Track)
+	track = models.ForeignKey(Track, related_name="races")
 	organization = models.CharField(max_length=100)
 	conditions = models.CharField(max_length=100)
 	def __unicode__(self):
