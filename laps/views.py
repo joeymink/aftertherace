@@ -1,21 +1,32 @@
-from laps.models import Machine, Race
+from laps.models import Machine, Race, Track
 from django.shortcuts import get_object_or_404, render
+from django.db.models import Q
+
+class RacesByYear:
+	races=None
+	years=None
+	dates=None
+
+	def get_races(self, race_filter_q=Q()):
+		self.races = Race.objects.filter(race_filter_q).order_by('date')
+		self.years = []
+		self.dates = []
+		race_by_date={}
+		for race in self.races:
+			year = race.date.year
+			if not(year in self.years):
+				self.years.append(year)
+			if not(race.date in self.dates):
+				self.dates.append(race.date)
+
 
 def races(request):
-	races = Race.objects.all().order_by('date')
-	years = []
-	dates = []
-	race_by_date={}
-	for race in races:
-		year = race.date.year
-		if not(year in years):
-			years.append(year)
-		if not(race.date in dates):
-			dates.append(race.date)
+	races = RacesByYear()
+	races.get_races()
 	return render(request, 'laps/races.html', {
-		'races':races,
-		'years':years,
-		'dates':dates })
+		'races':races.races,
+		'years':races.years,
+		'dates':races.dates })
 
 def race(request, race_id):
 	race = get_object_or_404(Race, pk=race_id)
@@ -27,4 +38,18 @@ def machine(request, machine_id):
 
 def machines(request):
 	machines = Machine.objects.all()
-	return render(request, 'laps/machines.html', {'machines': machines })	
+	return render(request, 'laps/machines.html', {'machines': machines })
+
+def tracks(request):
+	tracks = Track.objects.all()
+	return render(request, 'laps/tracks.html', {'tracks': tracks })
+
+def track(request, track_id):
+	track = get_object_or_404(Track, pk=track_id)
+	races = RacesByYear()
+	races.get_races(Q(track__id=track_id))
+	return render(request, 'laps/track.html', {
+		'track': track,
+		'races':races.races,
+		'years':races.years,
+		'dates':races.dates})

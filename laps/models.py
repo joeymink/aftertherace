@@ -81,6 +81,9 @@ class Track(models.Model):
 	def __unicode__(self):
 		return self.name
 
+	def machines(self):
+		return Machine.objects.filter(configurations__races__track=self)
+
 # Racer
 
 class Racer(models.Model):

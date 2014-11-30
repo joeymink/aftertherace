@@ -8,8 +8,13 @@
   <li class="active">{{ race.name }}</li>
 </ol>
 
-<h1>{{ race.name }} with {{ race.organization }} <small><span class="glyphicon glyphicon-map-marker" aria-hidden="true">
-</span>{{ race.track.name }}</small></h1>
+<h1>
+	{{ race.name }} with {{ race.organization }}
+	<small><span class="glyphicon glyphicon-map-marker" aria-hidden="true">
+	<a href="{% url 'laps:track' race.track.id %}">
+		</span>{{ race.track.name }}</small>
+	</a>
+</h1>
 <h3>{{ race.date }} <small>conditions: {{ race.conditions }}</small></h3>
 <!-- TODO: Conditions -->
 <div class="row">

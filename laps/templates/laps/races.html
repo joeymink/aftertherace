@@ -8,28 +8,7 @@
 <h1>Races</h1>
 
 {% if races %}
-    {% for year in years %}
-    	<h2><span class="label label-default">{{ year }}</span></h2>
-		<div class="row">
-			{% for date in dates %}
-				{% if date.year == year %}
-					<div class="col-md-11 col-md-offset-1"><strong>{{ date|date:"M d" }}</strong></div>
-					{% for race in races %}
-						{% if race.date == date %}
-							<div class="col-md-3 col-md-offset-2">
-								<a href="{% url 'laps:race' race.id %}">
-							 		{{ race.name }} with {{ race.organization }}
-								</a>
-							</div>
-							<div class="col-md-7">
-								<span class="glyphicon glyphicon-map-marker" aria-hidden="true"></span> {{ race.track.name }}
-							</div>
-						{% endif %}
-					{% endfor %}
-				{% endif %}
-			{% endfor %}
-        </div>
-    {% endfor %}
+	{% include "laps/races_by_year.html" %}
 {% else %}
     <p>No races are available.</p>
 {% endif %}

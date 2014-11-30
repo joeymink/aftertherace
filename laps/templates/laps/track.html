@@ -1,0 +1,25 @@
+{% include "laps/header.html" %}
+
+{% load lap_extras %}
+
+<ol class="breadcrumb">
+  <li><a href="#">home</a></li>
+  <li><a href="{% url 'laps:tracks' %}">tracks</a></li>
+  <li class="active">{{ track.name }}</li>
+</ol>
+
+<h1>{{ track.name }}</h1>
+
+<h2>Machines <small>raced here</small></h2>
+{% for machine in track.machines %}
+	<div class="row">
+		<div class="col-md-11 col-md-offset-1">
+			<a href="{% url 'laps:machine' machine.id %}">{{ machine.name }}</a>
+		</div>
+	</div>
+{% endfor %}
+
+<h2>Races <small>run here</small></h2>
+{% include "laps/races_by_year.html" %}
+
+{% include "laps/footer.html" %}
