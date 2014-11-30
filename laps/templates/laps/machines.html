@@ -8,16 +8,14 @@
 <h1>Machines</h1>
 
 {% if machines %}
+	<ul class="list-group">
 	{% for machine in machines %}
-			<div class="col-md-3 col-md-offset-2">
-				<a href="{% url 'laps:machine' machine.id %}">
-			 		{{ machine.name }}
-				</a>
-			</div>
-			<div class="col-md-7">
-				<span class="glyphicon glyphicon-map-marker" aria-hidden="true"></span> blar
-			</div>
+			<!-- span class="badge">races {{ machine.races.count }}</span -->
+			<a href="{% url 'laps:machine' machine.id %}" class="list-group-item">
+					{{ machine.name }}
+			</a>
 	{% endfor %}
+	</ul>
 {% else %}
     <p>No machines are available.</p>
 {% endif %}
