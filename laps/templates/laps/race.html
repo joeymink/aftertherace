@@ -9,13 +9,18 @@
 </ol>
 
 <h1>
+	<span class="glyphicon glyphicon-flag" aria-hidden="true"></span>
 	{{ race.name }} with {{ race.organization }}
-	<small><span class="glyphicon glyphicon-map-marker" aria-hidden="true">
-	<a href="{% url 'laps:track' race.track.id %}">
-		</span>{{ race.track.name }}</small>
-	</a>
 </h1>
-<h3>{{ race.date }} <small>conditions: {{ race.conditions }}</small></h3>
+<div class="row">
+	<div class="col-md-11 col-md-offset-1">
+	<h3>{{ race.date }} <small>conditions: {{ race.conditions }}</small></h3>
+	<h3>
+		<span class="glyphicon glyphicon-road" aria-hidden="true"></span>
+		<a href="{% url 'laps:track' race.track.id %}">{{ race.track.name }}</a>
+	</h3>
+	</div>
+</div>
 <!-- TODO: Conditions -->
 <div class="row">
 	<div class="col-md-6">

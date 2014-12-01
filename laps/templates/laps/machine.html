@@ -35,7 +35,7 @@
 </div>
 
 <div class="panel panel-default">
-	<div class="panel-heading">Events</div>
+	<div class="panel-heading">Event summary</div>
 	<table class="table">
 		{% for org, events in machine.events_by_organization.items %}
 			<tr>
@@ -47,7 +47,10 @@
 </div>
 
 <div class="panel panel-default">
-	<div class="panel-heading">Configurations</div>
+	<div class="panel-heading">
+		<span class="glyphicon glyphicon-cog" aria-hidden="true"></span>
+		Configurations used
+	</div>
 	<table class="table">
 		<tr>
 			{% for key in machine.unique_configuration_keys %}
@@ -66,3 +69,13 @@
 			</tr>
 		{% endfor %}
 	</table>
+</div>
+
+<div class="panel panel-default">
+	<div class="panel-heading"><span class="glyphicon glyphicon-flag" aria-hidden="true"></span> Races run</div>
+	<div class="panel-body">
+		{% include "laps/races_by_year.html" %}
+	</div>
+</div>
+
+{% include "laps/footer.html" %}
