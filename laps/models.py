@@ -82,7 +82,7 @@ class Track(models.Model):
 		return self.name
 
 	def machines(self):
-		return Machine.objects.filter(configurations__races__track=self)
+		return Machine.objects.filter(configurations__races__track=self).distinct()
 
 # Racer
 
