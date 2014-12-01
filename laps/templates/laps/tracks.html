@@ -1,0 +1,22 @@
+{% include "laps/header.html" %}
+
+<ol class="breadcrumb">
+  <li><a href="#">home</a></li>
+  <li class="active">tracks</li>
+</ol>
+
+<h1>Tracks</h1>
+
+{% if tracks %}
+	<ul class="list-group">
+	{% for track in tracks %}
+			<a href="{% url 'laps:track' track.id %}" class="list-group-item">
+					<span class="glyphicon glyphicon-road" aria-hidden="true"></span> {{ track.name }}
+			</a>
+	{% endfor %}
+	</ul>
+{% else %}
+    <p>No tracks are available.</p>
+{% endif %}
+
+{% include "laps/footer.html" %}
