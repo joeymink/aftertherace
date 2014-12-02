@@ -1,4 +1,5 @@
 from django.db import models
+from decimal import Decimal
 
 # Machine
 
@@ -117,6 +118,13 @@ class Race(models.Model):
 			elif lap['time'] < best:
 				best = lap['time']
 		return best
+
+	def average_lap_time(self):
+		lapsum = Decimal(0)
+		for lap in self.laps.values():
+			lapsum = lapsum + lap['time']
+		numlaps = len(self.laps.values())
+		return lapsum / (Decimal(numlaps))
 
 
 def get_or_create_race(name=None, date=None, track=None, organization=None, machine_config=None, conditions=None):

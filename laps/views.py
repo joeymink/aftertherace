@@ -1,6 +1,8 @@
 from laps.models import Machine, Race, Track
 from django.shortcuts import get_object_or_404, render
 from django.db.models import Q
+from django.views.generic import DetailView
+from braces.views import JSONResponseMixin
 
 class RacesByYear:
 	races=None
@@ -59,3 +61,28 @@ def track(request, track_id):
 		'races':races.races,
 		'years':races.years,
 		'dates':races.dates})
+
+def chart_test(request):
+	return render(request, 'laps/chart_test.html', {})
+
+
+class LapTrendAJAXView(JSONResponseMixin, DetailView):
+	model = Track
+	json_dumps_kwargs = {u"indent": 2}
+
+	def get(self, request, *args, **kwargs):
+		track = Track.objects.filter(name='NJMP - Thunderbolt')[0]
+		races = Race.objects.filter(track=track).order_by('date')
+		result = {
+			u'best': [],
+			u'avg': [],
+			u'date': [],
+		}
+		for race in races:
+			result['best'].append(race.best_lap_time())
+			result['avg'].append(race.average_lap_time())
+			result['date'].append(race.date)
+
+		return self.render_json_response(result)
+
+
