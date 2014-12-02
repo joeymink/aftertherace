@@ -8,43 +8,21 @@
   <li class="active">{{ machine.name }}</li>
 </ol>
 
-<h1>{{ machine.name }}</h1>
-<div class="row">
-	<div class="col-md-4">
-		<table class="table">
-			<tr>
-				<th>Year</th>
-				<td>{{ machine.year }}</td>
-			</tr>
-			<tr>
-				<th>Make</th>
-				<td>{{ machine.make }}</td>
-			</tr>
-			<tr>
-				<th>Make</th>
-				<td>{{ machine.model }}</td>
-			</tr>
-		</table>
-	</div>
-	<div class="col-md-8">
-		<p><em>Lap data spans {{ machine.first_race.date }} - {{ machine.last_race.date }} ...</em></p>
-		<p><em>{{ machine.tracks.count }} tracks ...</em></p>
-		<p><em>{{ machine.races.count }} <a href="{% url 'laps:races' %}">races ...</a></em></p>
-		<p><em>{{ machine.num_laps }} laps ...</em></p>
-	</div>
-</div>
-
-<div class="panel panel-default">
-	<div class="panel-heading">Event summary</div>
-	<table class="table">
-		{% for org, events in machine.events_by_organization.items %}
-			<tr>
-				<th>{{ org }}</th>
-				<td>{{ events |join:", " }}</td>
-			</tr>
-		{% endfor %}
-	</table>
-</div>
+<h1>{{ machine.name }} <small>{{ machine.year }} {{ machine.make }} {{ machine.model }}</small></h1>
+<dl class="dl-horizontal">
+	<dt>Lap data from</dt>
+	<dd>{{ machine.first_race.date }} - {{ machine.last_race.date }}</dd>
+	{% for org, events in machine.events_by_organization.items %}
+		<dt>Events run with {{ org }}</dt>
+		<dd>{{ events |join:", " }}</dd>
+	{% endfor %}
+	<dt>Tracks raced</dt>
+	<dd>{{ machine.tracks.count }}<dd>
+	<dt>Races run</dt>
+	<dd>{{ machine.races.count }}</dd>
+	<dt>Total laps</dt>
+	<dd>{{ machine.num_laps }}</dd>
+</dl>
 
 <div class="panel panel-default">
 	<div class="panel-heading">
