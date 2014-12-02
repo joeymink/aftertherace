@@ -13,17 +13,28 @@
 	{{ race.name }} with {{ race.organization }}
 </h1>
 <div class="row">
-	<div class="col-md-11 col-md-offset-1">
-	<h3>{{ race.date }}</h3>
-	<h3>
-		<span class="glyphicon glyphicon-road" aria-hidden="true"></span>
-		<a href="{% url 'laps:track' race.track.id %}">{{ race.track.name }}</a>
-	</h3>
-	{% if race.conditions %}
-		<p class="text-warning">Conditions: {{ race.conditions }}</p>
-	{% endif %}
+	<div class="col-md-3 col-md-offset-1">
+		<h3>{{ race.date }}</h3>
+	</div>
+	<div class="col-md-4">
+		<h3>
+			<span class="glyphicon glyphicon-road" aria-hidden="true"></span>
+			<a href="{% url 'laps:track' race.track.id %}">{{ race.track.name }}</a>
+		</h3>
+	</div>
+	<div class="col-md-4">
+		<h3>
+			<a href="{% url 'laps:machine' race.machine_config.machine.id %}">{{ race.machine_config.machine.name }}</a>
+		</h3>
 	</div>
 </div>
+{% if race.conditions %}
+	<div class="row">
+		<div class="col-md-4 col-md-offset-4">
+			<p class="text-warning">Conditions: {{ race.conditions }}</p>
+		</div>
+	</div>
+{% endif %}
 <!-- TODO: Conditions -->
 <div class="row">
 	<div class="col-md-6">
