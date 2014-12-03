@@ -19,6 +19,10 @@
 	</div>
 {% endfor %}
 
+<h2>Performance <small>over time</small></h2>
+{% include "laps/track_chart_best_avg.html" %}
+<div id="container" style="width:100%; height:400px;"></div>
+
 <h2>Races <small>run here</small></h2>
 {% include "laps/races_by_year.html" %}
 

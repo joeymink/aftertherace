@@ -1,0 +1,58 @@
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
+<script src="http://code.highcharts.com/highcharts.js"></script>
+<script type="text/javascript">
+	$(function () {
+		$.getJSON('http://localhost:8000/laps/chart/{{ track.id }}/', function( data ) {
+		var best = []
+		for (i = 0; i < data.best.length; i++)
+			best.push(parseFloat(data.best[i]))
+		var avg = []
+		for (i = 0; i < data.avg.length; i++)
+			avg.push(parseFloat(data.avg[i]))
+	    $('#container').highcharts({
+	        chart: {
+	            type: 'line'
+	        },
+	        title: {
+	            text: 'Best, Average Laps at {{ track.name }}'
+	        },
+	        xAxis: {
+	        	title: {
+	        		text: 'Race Date'
+	        	},
+	            categories: data.date
+	        },
+	        yAxis: {
+	            title: {
+	                text: 'Lap Time'
+	            },
+	            labels: {
+	            	formatter: function() {
+	            		var min = parseInt(this.value / 60, 10);
+	            		var sec = this.value % 60;
+	            		var milli = this.value % 1.0;
+	            		return min.toString() + ":" + sec.toString() + ":" + milli.toString();
+	            	}
+	            }
+	        },
+	        series: [{
+	            name: 'Best',
+	            data: best
+	        }, {
+	            name: 'Average',
+	            data: avg
+	        }],
+	        tooltip: {
+	        	formatter: function() {
+	        		// TODO: share min:sec:milli conversion code with yAxis.labels.formatter
+					var min = parseInt(this.y / 60, 10);
+            		var sec = parseInt(this.y % 60, 10);
+            		var milli = parseInt((this.y % 1) * 1000, 10);
+            		var laptime = min.toString() + ":" + sec.toString() + ":" + milli.toString();
+            		return laptime;
+	        	}
+	        }
+	    });
+	});
+	});
+</script>

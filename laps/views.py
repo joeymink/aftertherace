@@ -71,7 +71,8 @@ class LapTrendAJAXView(JSONResponseMixin, DetailView):
 	json_dumps_kwargs = {u"indent": 2}
 
 	def get(self, request, *args, **kwargs):
-		track = Track.objects.filter(name='NJMP - Thunderbolt')[0]
+		track_id = kwargs['track_id']
+		track = Track.objects.get(pk=track_id)
 		races = Race.objects.filter(track=track).order_by('date')
 		result = {
 			u'best': [],

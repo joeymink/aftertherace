@@ -9,6 +9,6 @@ urlpatterns = patterns('',
     url(r'^machines/(?P<machine_id>\d+)/', views.machine, name='machine'),
     url(r'^tracks/$', views.tracks, name='tracks'),
     url(r'^tracks/(?P<track_id>\d+)/', views.track, name='track'),
-    url(r'^chart/', views.LapTrendAJAXView.as_view()),
+    url(r'^chart/(?P<track_id>\d+)/$', views.LapTrendAJAXView.as_view()),
     url(r'^chart_test/', views.chart_test),
 )
