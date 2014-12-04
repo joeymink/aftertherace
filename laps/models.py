@@ -85,6 +85,12 @@ class Track(models.Model):
 	def machines(self):
 		return Machine.objects.filter(configurations__races__track=self).distinct()
 
+	def races(self):
+		return Race.objects.filter(track=self)
+
+	def laps(self):
+		return Lap.objects.filter(race__track=self)
+
 # Racer
 
 class Racer(models.Model):
