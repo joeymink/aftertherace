@@ -77,12 +77,16 @@ class LapTrendAJAXView(JSONResponseMixin, DetailView):
 		result = {
 			u'best': [],
 			u'avg': [],
-			u'date': [],
+			u'race': [],
 		}
 		for race in races:
 			result['best'].append(race.best_lap_time())
 			result['avg'].append(race.average_lap_time())
-			result['date'].append(race.date)
+			result['race'].append({
+				u'date': race.date,
+				u'name': race.name,
+				u'id': race.id
+				})
 
 		return self.render_json_response(result)
 
