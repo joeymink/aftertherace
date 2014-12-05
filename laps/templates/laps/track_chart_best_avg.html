@@ -1,6 +1,11 @@
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
 <script src="http://code.highcharts.com/highcharts.js"></script>
 <script type="text/javascript">
+	function pad (str, max) {
+	  str = str.toString();
+	  return str.length < max ? pad("0" + str, max) : str;
+	}
+
 	$(function () {
 		$.getJSON('http://localhost:8000/laps/tracks/{{ track.id }}/chart_best_avg', function( data ) {
 		var best = []
@@ -31,7 +36,7 @@
 	            		var min = parseInt(this.value / 60, 10);
 	            		var sec = this.value % 60;
 	            		var milli = this.value % 1.0;
-	            		return min.toString() + ":" + sec.toString() + ":" + milli.toString();
+	            		return min.toString() + ":" + pad(sec.toString(), 2) + ":" + milli.toString();
 	            	}
 	            }
 	        },
@@ -48,7 +53,7 @@
 					var min = parseInt(this.y / 60, 10);
             		var sec = parseInt(this.y % 60, 10);
             		var milli = parseInt((this.y % 1) * 1000, 10);
-            		var laptime = min.toString() + ":" + sec.toString() + ":" + milli.toString();
+            		var laptime = min.toString() + ":" + pad(sec.toString(), 2) + ":" + pad(milli.toString(), 3);
             		return laptime;
 	        	}
 	        }
