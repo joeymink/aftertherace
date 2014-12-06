@@ -7,7 +7,7 @@
 	}
 
 	$(function () {
-		$.getJSON('http://localhost:8000/laps/tracks/{{ track.id }}/chart_best_avg', function( data ) {
+		$.getJSON('/laps/tracks/{{ track.id }}/chart_best_avg', function( data ) {
 		var best = []
 		for (i = 0; i < data.best.length; i++)
 			best.push(parseFloat(data.best[i]))
