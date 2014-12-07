@@ -1,36 +1,31 @@
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
 <script src="http://code.highcharts.com/highcharts.js"></script>
 <script type="text/javascript">
+	// TODO: put this function in one place and re-use
 	function pad (str, max) {
 	  str = str.toString();
 	  return str.length < max ? pad("0" + str, max) : str;
 	}
 
 	$(function () {
-		$.getJSON('/laps/tracks/{{ track.id }}/chart_best_avg', function( data ) {
-		var best = []
-		for (i = 0; i < data.best.length; i++)
-			best.push(parseFloat(data.best[i]))
-		var avg = []
-		for (i = 0; i < data.avg.length; i++)
-			avg.push(parseFloat(data.avg[i]))
+		$.getJSON('/laps/races/{{ race.id }}/chart_laps', function( data ) {
+		var times = [];
+		for (i = 0; i < data.length; i++)
+			times.push(parseFloat(data[i].time));
 	    $('#container').highcharts({
 	        chart: {
 	            type: 'line'
 	        },
 	        title: {
-	            text: 'Best, Average Laps at {{ track.name }}'
+	            text: 'Lap Times'
 	        },
 	        xAxis: {
-	        	title: {
-	        		text: 'Race Date'
-	        	},
 	        	labels: {
 	        		formatter: function() {
-	        			return this.value.date;
+	        			return this.value.num;
 	        		}
 	        	},
-	            categories: data.race
+	            categories: data
 	        },
 	        yAxis: {
 	            title: {
@@ -46,11 +41,8 @@
 	            }
 	        },
 	        series: [{
-	            name: 'Best',
-	            data: best
-	        }, {
-	            name: 'Average',
-	            data: avg
+	            name: 'Lap Time',
+	            data: times
 	        }],
 	        tooltip: {
 	        	useHTML: true,
@@ -60,7 +52,7 @@
             		var sec = parseInt(this.y % 60, 10);
             		var milli = parseInt((this.y % 1) * 1000, 10);
             		var laptime = min.toString() + ":" + pad(sec.toString(), 2) + ":" + pad(milli.toString(), 3);
-            		return laptime + " (<a href=\"/laps/races/" + this.x.id + "\">" + this.x.name + "</a>)";
+            		return "<b>Lap " + this.x.num + ":</b><br/>" + laptime;
 	        	}
 	        }
 	    });
