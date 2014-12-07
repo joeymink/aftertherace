@@ -90,4 +90,17 @@ class LapTrendAJAXView(JSONResponseMixin, DetailView):
 
 		return self.render_json_response(result)
 
+class LapsAJAXView(JSONResponseMixin, DetailView):
+	model = Race
+	json_dumps_kwargs = {u"indent": 2}
+
+	def get(self, request, *args, **kwargs):
+		race_id = kwargs['race_id']
+		race = Race.objects.get(pk=race_id)
+		result = []
+		for lap in race.laps.values('num', 'time'):
+			result.append({u'num': lap['num'], u'time': lap['time']})
+
+		return self.render_json_response(result)
+
 
