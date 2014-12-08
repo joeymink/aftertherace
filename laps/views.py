@@ -103,4 +103,26 @@ class LapsAJAXView(JSONResponseMixin, DetailView):
 
 		return self.render_json_response(result)
 
+class TracksRacedAJAXView(JSONResponseMixin, DetailView):
+	model = Race
+	json_dumps_kwargs = {u"indent": 2}
+
+	def get(self, request, *args, **kwargs):
+		machine_id = kwargs['machine_id']
+		machine = Machine.objects.get(pk=machine_id)
+		result = []
+		for track in Track.objects.all().order_by('name'):
+			num_races = Race.objects.filter(track=track, machine_config__machine=machine).count()
+			if not(num_races == 0):
+				result_item = {
+						u'track': {
+							u'id': track.id,
+							u'name': track.name
+						},
+						u'num_races': num_races
+					}
+				result.append(result_item)
+
+		return self.render_json_response(result)
+
 
