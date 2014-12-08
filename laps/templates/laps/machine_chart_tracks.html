@@ -1,0 +1,41 @@
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
+<script src="http://code.highcharts.com/highcharts.js"></script>
+<script type="text/javascript">
+	// TODO: put this function in one place and re-use
+	function pad (str, max) {
+	  str = str.toString();
+	  return str.length < max ? pad("0" + str, max) : str;
+	}
+
+	$(function () {
+		$.getJSON('/laps/machines/{{ machine.id }}/chart_tracks', function( data ) {
+			var num_races = [];
+			for (i = 0; i < data.length; i++)
+				num_races.push(data[i].num_races);
+			var tracks = [];
+			for (i = 0; i < data.length; i++)
+				tracks.push(data[i].track.name);
+				
+		    $('#container').highcharts({
+		        chart: {
+		            type: 'bar'
+		        },
+		        title: {
+		        	text: 'Tracks Raced'
+		        },
+		        xAxis: {
+		            categories: tracks
+		        },
+		        tooltip: {
+		            formatter: function () {
+		                return this.x + ': <b>' + this.y + '</b>';
+		            }
+		        },
+		        series: [{
+		        	name: 'Races',
+		            data: num_races
+		        }]
+    		});
+		});
+	});
+</script>
