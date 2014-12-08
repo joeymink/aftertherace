@@ -12,27 +12,31 @@
 			var num_races = [];
 			for (i = 0; i < data.length; i++)
 				num_races.push(data[i].num_races);
-			var tracks = [];
-			for (i = 0; i < data.length; i++)
-				tracks.push(data[i].track.name);
 				
 		    $('#container').highcharts({
 		        chart: {
 		            type: 'bar'
 		        },
 		        title: {
-		        	text: 'Tracks Raced'
+		        	text: ''
 		        },
 		        xAxis: {
-		            categories: tracks
+		        	labels: {
+		        		formatter: function() {
+		        			return this.value.track.name;
+		        		}
+		        	},
+		            categories: data
 		        },
 		        tooltip: {
+	        		useHTML: true,
 		            formatter: function () {
-		                return this.x + ': <b>' + this.y + '</b>';
+		                return '<a href="/laps/tracks/' + this.x.track.id + '">'
+		                	+ this.x.track.name + '</a>: <b>' + this.y + '</b>';
 		            }
 		        },
 		        series: [{
-		        	name: 'Races',
+		        	name: 'Number of Races',
 		            data: num_races
 		        }]
     		});
