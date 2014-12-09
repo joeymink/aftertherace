@@ -2,12 +2,6 @@
 
 {% load lap_extras %}
 
-<ol class="breadcrumb">
-  <li><a href="#">home</a></li>
-  <li><a href="{% url 'laps:machines' %}">machines</a></li>
-  <li class="active">{{ machine.name }}</li>
-</ol>
-
 <h1>{{ machine.name }} <small>{{ machine.year }} {{ machine.make }} {{ machine.model }}</small></h1>
 <dl class="dl-horizontal">
 	<dt>Lap data from</dt>
