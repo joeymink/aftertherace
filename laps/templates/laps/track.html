@@ -2,12 +2,6 @@
 
 {% load lap_extras %}
 
-<ol class="breadcrumb">
-  <li><a href="#">home</a></li>
-  <li><a href="{% url 'laps:tracks' %}">tracks</a></li>
-  <li class="active">{{ track.name }}</li>
-</ol>
-
 <h1><span class="glyphicon glyphicon-road" aria-hidden="true"></span> {{ track.name }}</h1>
 
 <dl class="dl-horizontal">

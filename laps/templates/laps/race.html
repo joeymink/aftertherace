@@ -2,12 +2,6 @@
 
 {% load lap_extras %}
 
-<ol class="breadcrumb">
-  <li><a href="#">home</a></li>
-  <li><a href="{% url 'laps:races' %}">races</a></li>
-  <li class="active">{{ race.name }}</li>
-</ol>
-
 <h1>
 	<span class="glyphicon glyphicon-flag" aria-hidden="true"></span>
 	{{ race.name }} with {{ race.organization }}
