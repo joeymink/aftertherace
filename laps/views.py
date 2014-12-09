@@ -62,9 +62,8 @@ def track(request, track_id):
 		'years':races.years,
 		'dates':races.dates})
 
-def chart_test(request):
-	return render(request, 'laps/chart_test.html', {})
-
+def index(request):
+	return render(request, 'laps/index.html', {})
 
 class LapTrendAJAXView(JSONResponseMixin, DetailView):
 	model = Track
