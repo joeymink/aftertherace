@@ -7,8 +7,3 @@ urlpatterns = patterns('',
     url(r'^admin/', include(admin.site.urls)),
     url(r'^/?$', laps.views.index)
 )
-
-import settings
-urlpatterns += patterns('',
- (r'^static/.*$', 'django.views.static.serve', {'document_root': settings.STATIC_ROOT}),
- )
