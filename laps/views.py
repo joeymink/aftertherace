@@ -4,6 +4,8 @@ from django.db.models import Q
 from django.views.generic import DetailView
 from braces.views import JSONResponseMixin
 
+from django.contrib.auth.decorators import login_required
+
 class RacesByYear:
 	races=None
 	years=None
@@ -123,5 +125,10 @@ class TracksRacedAJAXView(JSONResponseMixin, DetailView):
 				result.append(result_item)
 
 		return self.render_json_response(result)
+
+
+@login_required
+def edit_race(request, race_id):
+	return render(request, 'laps/index.html', {})
 
 
