@@ -1,10 +1,12 @@
 from laps.models import Machine, Race, Track
-from django.shortcuts import get_object_or_404, render
+from django.shortcuts import get_object_or_404, render, HttpResponseRedirect
 from django.db.models import Q
 from django.views.generic import DetailView
 from braces.views import JSONResponseMixin
 
 from django.contrib.auth.decorators import login_required
+
+import forms
 
 class RacesByYear:
 	races=None
@@ -129,6 +131,16 @@ class TracksRacedAJAXView(JSONResponseMixin, DetailView):
 
 @login_required
 def edit_race(request, race_id):
-	return render(request, 'laps/index.html', {})
+	race = get_object_or_404(Race, pk=race_id)
+	if request.method == 'POST':
+		form = forms.EditRaceForm(request.POST)
+		if form.has_changed():
+			if form.is_valid():
+				race.name = form.cleaned_data['name']
+				race.save()
+				return HttpResponseRedirect("/laps/races/%d" % race.id)
+	else:
+		form = forms.EditRaceForm(race.__dict__)
+	return render(request, 'laps/edit_race.html', { 'form':form, 'race':race })
 
 
