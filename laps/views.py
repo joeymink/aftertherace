@@ -138,7 +138,7 @@ def edit_race(request, race_id):
 			if form.is_valid():
 				race.name = form.cleaned_data['name']
 				race.save()
-				return HttpResponseRedirect("/laps/races/%d" % race.id)
+				return HttpResponseRedirect("/laps/races/%d/edit/laps?num_laps=%d" % (race.id, form.cleaned_data['num_laps']))
 	else:
 		form = forms.EditRaceForm(race.__dict__)
 	return render(request, 'laps/edit_race.html', { 'form':form, 'race':race })
@@ -146,15 +146,22 @@ def edit_race(request, race_id):
 @login_required
 def edit_race_laps(request, race_id):
 	race = get_object_or_404(Race, pk=race_id)
+	laps = Lap.objects.filter(race__id=race_id)
+	num_laps = request.GET.get('num_laps', None)
+	if num_laps is None:
+		# TODO: bad request?
+		raise Exception("can't call this page without num_laps GET param")
 	if request.method == 'POST':
-		return render(request, 'laps/race.html', {'race': race })
+		# TODO: include notification to say update was successful
+		form = forms.EditLapsForm(request.POST, num_laps=num_laps, laps=laps)
+		if form.is_valid():
+			# TODO: use info below to update actual lap data
+			form.get_lap_dict()
+		else:
+			raise Exception('Invalid form submission')
+		return HttpResponseRedirect("/laps/races/%d" % race.id)
 	else:
-		num_laps = request.GET.get('num_laps', None)
-		if num_laps is None:
-			# TODO: bad request?
-			raise Exception("can't call this page without num_laps GET param")
 		num_laps = int(num_laps)
-		laps = Lap.objects.filter(race__id=race_id)
 		form = forms.EditLapsForm(num_laps=num_laps, laps=laps)
 	return render(request, 'laps/edit_laps.html', { 'form':form, 'race':race })
 
