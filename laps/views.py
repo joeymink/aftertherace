@@ -1,4 +1,4 @@
-from laps.models import Machine, Race, Track
+from laps.models import Lap, Machine, Race, Track
 from django.shortcuts import get_object_or_404, render, HttpResponseRedirect
 from django.db.models import Q
 from django.views.generic import DetailView
@@ -142,5 +142,20 @@ def edit_race(request, race_id):
 	else:
 		form = forms.EditRaceForm(race.__dict__)
 	return render(request, 'laps/edit_race.html', { 'form':form, 'race':race })
+
+@login_required
+def edit_race_laps(request, race_id):
+	race = get_object_or_404(Race, pk=race_id)
+	if request.method == 'POST':
+		return render(request, 'laps/race.html', {'race': race })
+	else:
+		num_laps = request.GET.get('num_laps', None)
+		if num_laps is None:
+			# TODO: bad request?
+			raise Exception("can't call this page without num_laps GET param")
+		num_laps = int(num_laps)
+		laps = Lap.objects.filter(race__id=race_id)
+		form = forms.EditLapsForm(num_laps=num_laps, laps=laps)
+	return render(request, 'laps/edit_laps.html', { 'form':form, 'race':race })
 
 
