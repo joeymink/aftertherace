@@ -29,6 +29,7 @@ class EditLapsForm(forms.Form):
 					lap_num = int(key[3:])
 					laps_dict[lap_num] = value
 					print "found lap number %d with value %s" % (lap_num, value)
+		return laps_dict
 
 	def num_laps(self):
 		return self.num_laps

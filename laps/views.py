@@ -1,4 +1,4 @@
-from laps.models import Lap, Machine, Race, Track
+from laps.models import Lap, Machine, Race, Racer, Track
 from django.shortcuts import get_object_or_404, render, HttpResponseRedirect
 from django.db.models import Q
 from django.views.generic import DetailView
@@ -6,7 +6,7 @@ from braces.views import JSONResponseMixin
 
 from django.contrib.auth.decorators import login_required
 
-import forms
+import forms, util
 
 class RacesByYear:
 	races=None
@@ -140,8 +140,14 @@ def edit_race(request, race_id):
 				race.save()
 				return HttpResponseRedirect("/laps/races/%d/edit/laps?num_laps=%d" % (race.id, form.cleaned_data['num_laps']))
 	else:
-		form = forms.EditRaceForm(race.__dict__)
+		initial_form_values = race.__dict__
+		initial_form_values['num_laps'] = race.num_laps()
+		form = forms.EditRaceForm(initial_form_values)
 	return render(request, 'laps/edit_race.html', { 'form':form, 'race':race })
+
+# TODO: allow more than one racer! synonymous with user?
+def current_racer():
+	return Racer.objects.all()[0]
 
 @login_required
 def edit_race_laps(request, race_id):
@@ -151,12 +157,21 @@ def edit_race_laps(request, race_id):
 	if num_laps is None:
 		# TODO: bad request?
 		raise Exception("can't call this page without num_laps GET param")
+
 	if request.method == 'POST':
 		# TODO: include notification to say update was successful
 		form = forms.EditLapsForm(request.POST, num_laps=num_laps, laps=laps)
 		if form.is_valid():
-			# TODO: use info below to update actual lap data
-			form.get_lap_dict()
+			for lap_num, lap_time_str in form.get_lap_dict().iteritems():
+				lap_time_s = util.interpret_time(lap_time_str)
+				try:
+					lap = Lap.objects.get(race=race, num=lap_num)
+					# Update exist lap:
+					lap.time = lap_time_s
+				except Lap.DoesNotExist:
+					# Create a new lap:
+					lap, created = Lap.objects.get_or_create(race=race, num=lap_num, time=lap_time_s, racer=current_racer())
+				lap.save()
 		else:
 			raise Exception('Invalid form submission')
 		return HttpResponseRedirect("/laps/races/%d" % race.id)
