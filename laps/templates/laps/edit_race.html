@@ -1,0 +1,11 @@
+{% include "laps/header.html" %}
+
+<form action="{% url 'laps:edit_race' race.id %}" method="post">
+	{% csrf_token %}
+	<table class="table">
+		{{ form.as_table }}
+	</table>
+	<input type="submit" value="Next" />
+</form>
+
+{% include "laps/footer.html" %}

@@ -1,0 +1,17 @@
+{% include "laps/header.html" %}
+
+<h1>
+	<span class="glyphicon glyphicon-flag" aria-hidden="true"></span>
+	{{ race.name }} <small>{{ race.date }}</small>
+</h1>
+
+<h2>Laps</h2>
+<form action="{% url 'laps:edit_race_laps' race.id %}?num_laps={{ form.num_laps }}" method="post">
+	{% csrf_token %}
+	<table class="table">
+	{{ form.as_table }}
+	</table>
+	<input type="submit" value="Submit" />
+</form>
+
+{% include "laps/footer.html" %}

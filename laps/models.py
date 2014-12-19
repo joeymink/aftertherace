@@ -110,6 +110,7 @@ class Race(models.Model):
 	track = models.ForeignKey(Track, related_name="races")
 	organization = models.CharField(max_length=100)
 	conditions = models.CharField(max_length=100)
+	num_laps = models.IntegerField(default=0)
 	def __unicode__(self):
 		return self.track.name
 

@@ -1,8 +1,12 @@
-from laps.models import Machine, Race, Track
-from django.shortcuts import get_object_or_404, render
+from laps.models import Lap, Machine, Race, Racer, Track
+from django.shortcuts import get_object_or_404, render, HttpResponseRedirect
 from django.db.models import Q
 from django.views.generic import DetailView
 from braces.views import JSONResponseMixin
+
+from django.contrib.auth.decorators import login_required
+
+import forms, util
 
 class RacesByYear:
 	races=None
@@ -123,5 +127,63 @@ class TracksRacedAJAXView(JSONResponseMixin, DetailView):
 				result.append(result_item)
 
 		return self.render_json_response(result)
+
+
+@login_required
+def edit_race(request, race_id):
+	race = get_object_or_404(Race, pk=race_id)
+	if request.method == 'POST':
+		form = forms.EditRaceForm(request.POST)
+		if form.has_changed():
+			if form.is_valid():
+				race.name = form.cleaned_data['name']
+				race.num_laps = form.cleaned_data['num_laps']
+				race.save()
+				return HttpResponseRedirect("/laps/races/%d/edit/laps" % race.id)
+	else:
+		initial_form_values = race.__dict__
+		form = forms.EditRaceForm(initial_form_values)
+	return render(request, 'laps/edit_race.html', { 'form':form, 'race':race })
+
+# TODO: allow more than one racer! synonymous with user?
+def current_racer():
+	return Racer.objects.all()[0]
+
+@login_required
+def edit_race_laps(request, race_id):
+	race = get_object_or_404(Race, pk=race_id)
+	laps = Lap.objects.filter(race__id=race_id)
+	if race.num_laps == 0:
+		# No laps to enter/edit, so just return to the race page
+		return HttpResponseRedirect("/laps/races/%d" % race.id)
+
+	if request.method == 'POST':
+		# TODO: include notification to say update was successful
+		form = forms.EditLapsForm(request.POST, num_laps=race.num_laps, laps=laps)
+		if form.is_valid():
+			lap_dict = form.get_lap_dict()
+			for lap_num in xrange(1, form.num_laps + 1):
+				if not(lap_num in lap_dict) or not(lap_dict[lap_num]):	# no lap time given
+					try:
+						lap = Lap.objects.get(race=race, num=lap_num)
+						lap.delete()
+					except Lap.DoesNotExist:
+						pass	# Lap doesn't exist? No problem
+				else:	# lap time given for this lap number
+					lap_time_s = util.interpret_time(lap_dict[lap_num])
+					try:
+						lap = Lap.objects.get(race=race, num=lap_num)
+						# Update exist lap:
+						lap.time = lap_time_s
+					except Lap.DoesNotExist:
+						# Create a new lap:
+						lap, created = Lap.objects.get_or_create(race=race, num=lap_num, time=lap_time_s, racer=current_racer())
+					lap.save()
+		else:
+			raise Exception('Invalid form submission')
+		return HttpResponseRedirect("/laps/races/%d" % race.id)
+	else:
+		form = forms.EditLapsForm(num_laps=race.num_laps, laps=laps)
+	return render(request, 'laps/edit_laps.html', { 'form':form, 'race':race })
 
 
