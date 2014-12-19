@@ -162,16 +162,24 @@ def edit_race_laps(request, race_id):
 		# TODO: include notification to say update was successful
 		form = forms.EditLapsForm(request.POST, num_laps=num_laps, laps=laps)
 		if form.is_valid():
-			for lap_num, lap_time_str in form.get_lap_dict().iteritems():
-				lap_time_s = util.interpret_time(lap_time_str)
-				try:
-					lap = Lap.objects.get(race=race, num=lap_num)
-					# Update exist lap:
-					lap.time = lap_time_s
-				except Lap.DoesNotExist:
-					# Create a new lap:
-					lap, created = Lap.objects.get_or_create(race=race, num=lap_num, time=lap_time_s, racer=current_racer())
-				lap.save()
+			lap_dict = form.get_lap_dict()
+			for lap_num in xrange(1, form.num_laps + 1):
+				if not(lap_num in lap_dict) or not(lap_dict[lap_num]):	# no lap time given
+					try:
+						lap = Lap.objects.get(race=race, num=lap_num)
+						lap.delete()
+					except Lap.DoesNotExist:
+						pass	# Lap doesn't exist? No problem
+				else:	# lap time given for this lap number
+					lap_time_s = util.interpret_time(lap_dict[lap_num])
+					try:
+						lap = Lap.objects.get(race=race, num=lap_num)
+						# Update exist lap:
+						lap.time = lap_time_s
+					except Lap.DoesNotExist:
+						# Create a new lap:
+						lap, created = Lap.objects.get_or_create(race=race, num=lap_num, time=lap_time_s, racer=current_racer())
+					lap.save()
 		else:
 			raise Exception('Invalid form submission')
 		return HttpResponseRedirect("/laps/races/%d" % race.id)

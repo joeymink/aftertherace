@@ -26,7 +26,7 @@ class EditLapsForm(forms.Form):
 		for key, value in self.cleaned_data.iteritems():
 			if key.startswith('lap'):
 				if value.strip():
-					lap_num = int(key[3:])
+					lap_num = int(key[3:]) # all characters after 'lap'
 					laps_dict[lap_num] = value
 					print "found lap number %d with value %s" % (lap_num, value)
 		return laps_dict
