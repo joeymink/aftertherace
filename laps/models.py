@@ -110,6 +110,7 @@ class Race(models.Model):
 	track = models.ForeignKey(Track, related_name="races")
 	organization = models.CharField(max_length=100)
 	conditions = models.CharField(max_length=100)
+	num_laps = models.IntegerField(default=0)
 	def __unicode__(self):
 		return self.track.name
 
@@ -131,9 +132,6 @@ class Race(models.Model):
 			lapsum = lapsum + lap['time']
 		numlaps = len(self.laps.values())
 		return lapsum / (Decimal(numlaps))
-
-	def num_laps(self):
-		return Lap.objects.filter(race=self).count()
 
 
 def get_or_create_race(name=None, date=None, track=None, organization=None, machine_config=None, conditions=None):
