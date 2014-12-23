@@ -1,9 +1,25 @@
 from django import forms
 from templatetags.lap_extras import format_lap_time
+from laps.models import Lap, Machine, Race, Racer, Track
 
 class EditRaceForm(forms.Form):
 	name = forms.CharField(label='Name', max_length=100)
+	date = forms.DateField(label="Date")
+	machine_name = forms.ChoiceField(label='Machine')
 	num_laps = forms.IntegerField(label='# Laps')
+
+	def __init__(self, *args, **kwargs):
+		super(EditRaceForm, self).__init__(*args, **kwargs)
+		# TODO: support multiple racers
+		#self.num_laps = int(kwargs.pop('racer'))
+		self.set_choices()
+
+	def set_choices(self):
+		choices = []
+		# TODO: support multiple racers
+		for n in Machine.objects.all().values('name'):
+			choices.append((n['name'], n['name']))
+		self.fields['machine_name'].choices = choices
 
 class EditLapsForm(forms.Form):
 	def __init__(self, *args, **kwargs):

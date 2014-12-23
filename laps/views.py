@@ -128,6 +128,29 @@ class TracksRacedAJAXView(JSONResponseMixin, DetailView):
 
 		return self.render_json_response(result)
 
+# TODO: allow more than one racer! synonymous with user?
+def current_racers_bike(name):
+	return Machine.objects.get(name=name)[0]
+
+@login_required
+def create_race(request):
+	if request.method == 'POST':
+		form = forms.EditRaceForm(request.POST)
+		if form.has_changed():
+			if form.is_valid():
+				race.name = form.cleaned_data['name']
+				race.date = form.cleaned_data['date']
+				config = MachineConfiguration()
+				config.machine = current_racers_bike(form.cleaned_data['machine_name'])
+				race.num_laps = form.cleaned_data['num_laps']
+				race.save()
+				return HttpResponseRedirect("/laps/races/%d/edit/laps" % race.id)
+	else:
+		# TODO: initial values (date=today, )
+		#initial_form_values = race.__dict__
+		#form = forms.EditRaceForm(initial_form_values)
+		form = forms.EditRaceForm()
+	return render(request, 'laps/new_race.html', { 'form':form })
 
 @login_required
 def edit_race(request, race_id):
