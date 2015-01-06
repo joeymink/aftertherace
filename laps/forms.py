@@ -6,6 +6,7 @@ class EditRaceForm(forms.Form):
 	name = forms.CharField(label='Name', max_length=100)
 	date = forms.DateField(label="Date")
 	machine_name = forms.ChoiceField(label='Machine')
+	track_name = forms.ChoiceField(label='Track')
 	num_laps = forms.IntegerField(label='# Laps')
 
 	def __init__(self, *args, **kwargs):
@@ -18,8 +19,13 @@ class EditRaceForm(forms.Form):
 		choices = []
 		# TODO: support multiple racers
 		for n in Machine.objects.all().values('name'):
-			choices.append((n['name'], n['name']))
+			choices.append( (n['name'], n['name']) )
 		self.fields['machine_name'].choices = choices
+		
+		choices = []
+		for t in Track.objects.all().values('name'):
+			choices.append( (t['name'], t['name']) )
+		self.fields['track_name'].choices = choices
 
 class EditLapsForm(forms.Form):
 	def __init__(self, *args, **kwargs):

@@ -1,4 +1,4 @@
-from laps.models import Lap, Machine, Race, Racer, Track
+from laps.models import Lap, Machine, MachineConfiguration, Race, Racer, Track
 from django.shortcuts import get_object_or_404, render, HttpResponseRedirect
 from django.db.models import Q
 from django.views.generic import DetailView
@@ -130,7 +130,7 @@ class TracksRacedAJAXView(JSONResponseMixin, DetailView):
 
 # TODO: allow more than one racer! synonymous with user?
 def current_racers_bike(name):
-	return Machine.objects.get(name=name)[0]
+	return Machine.objects.get(name=name)
 
 @login_required
 def create_race(request):
@@ -138,11 +138,16 @@ def create_race(request):
 		form = forms.EditRaceForm(request.POST)
 		if form.has_changed():
 			if form.is_valid():
-				race.name = form.cleaned_data['name']
-				race.date = form.cleaned_data['date']
 				config = MachineConfiguration()
 				config.machine = current_racers_bike(form.cleaned_data['machine_name'])
+				config.save()
+
+				race = Race()
+				race.name = form.cleaned_data['name']
+				race.date = form.cleaned_data['date']
+				race.track = Track.objects.get(name=form.cleaned_data['track_name'])
 				race.num_laps = form.cleaned_data['num_laps']
+				race.machine_config = config
 				race.save()
 				return HttpResponseRedirect("/laps/races/%d/edit/laps" % race.id)
 	else:
