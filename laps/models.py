@@ -31,6 +31,15 @@ class Machine(models.Model):
 					keys.append(key)
 		return keys
 
+	def empty_configuration(self):
+		""" Return the empty configuration for this machine """
+		for c in self.configurations.all():
+			if len(c.attributes.values()) == 0:
+				return c
+		new_config = MachineConfiguration(machine=self)
+		new_config.save()
+		return new_config
+
 	def unique_configurations(self):
 		# find unique machine configurations:
 		config_dict = {}

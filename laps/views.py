@@ -138,9 +138,8 @@ def create_race(request):
 		form = forms.EditRaceForm(request.POST)
 		if form.has_changed():
 			if form.is_valid():
-				config = MachineConfiguration()
-				config.machine = current_racers_bike(form.cleaned_data['machine_name'])
-				config.save()
+				machine = current_racers_bike(form.cleaned_data['machine_name'])
+				config = machine.empty_configuration()
 
 				race = Race()
 				race.name = form.cleaned_data['name']
