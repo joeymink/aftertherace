@@ -164,11 +164,18 @@ def edit_race(request, race_id):
 		if form.has_changed():
 			if form.is_valid():
 				race.name = form.cleaned_data['name']
+				race.track = Track.objects.get(name=form.cleaned_data['track_name'])
 				race.num_laps = form.cleaned_data['num_laps']
+				if not(race.machine_config.machine.name == form.cleaned_data['name']):
+					# The machine was changed
+					machine = current_racers_bike(form.cleaned_data['machine_name'])
+					race.machine_config = machine.empty_configuration()
 				race.save()
 				return HttpResponseRedirect("/laps/races/%d/edit/laps" % race.id)
 	else:
 		initial_form_values = race.__dict__
+		initial_form_values['machine_name'] = race.machine_config.machine.name
+		initial_form_values['track_name'] = race.track.name 
 		form = forms.EditRaceForm(initial_form_values)
 	return render(request, 'laps/edit_race.html', { 'form':form, 'race':race })
 
