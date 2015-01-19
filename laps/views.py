@@ -14,16 +14,16 @@ class RacesByYear:
 	dates=None
 
 	def get_races(self, race_filter_q=Q()):
-		self.races = Race.objects.filter(race_filter_q).order_by('date')
+		self.races = Race.objects.filter(race_filter_q).order_by('date_time')
 		self.years = []
 		self.dates = []
 		race_by_date={}
 		for race in self.races:
-			year = race.date.year
+			year = race.date_time.year
 			if not(year in self.years):
 				self.years.append(year)
-			if not(race.date in self.dates):
-				self.dates.append(race.date)
+			if not(race.date_time in self.dates):
+				self.dates.append(race.date_time)
 
 
 def races(request):
@@ -93,7 +93,7 @@ class LapTrendAJAXView(JSONResponseMixin, DetailView):
 	def get(self, request, *args, **kwargs):
 		track_id = kwargs['track_id']
 		track = Track.objects.get(pk=track_id)
-		races = Race.objects.filter(track=track).order_by('date')
+		races = Race.objects.filter(track=track).order_by('date_time')
 		result = {
 			u'best': [],
 			u'avg': [],
@@ -103,7 +103,7 @@ class LapTrendAJAXView(JSONResponseMixin, DetailView):
 			result['best'].append(race.best_lap_time())
 			result['avg'].append(race.average_lap_time())
 			result['race'].append({
-				u'date': race.date,
+				u'date': race.date_time,
 				u'name': race.name,
 				u'id': race.id
 				})
@@ -160,7 +160,7 @@ def create_race(request):
 
 				race = Race()
 				race.name = form.cleaned_data['name']
-				race.date = form.cleaned_data['date']
+				race.date_time = form.cleaned_data['date_time']
 				race.track = Track.objects.get(name=form.cleaned_data['track_name'])
 				race.num_laps = form.cleaned_data['num_laps']
 				race.machine_config = config

@@ -5,7 +5,7 @@
 <h1>{{ machine.name }} <small>{{ machine.year }} {{ machine.make }} {{ machine.model }}</small></h1>
 <dl class="dl-horizontal">
 	<dt>Lap data from</dt>
-	<dd>{{ machine.first_race.date }} - {{ machine.last_race.date }}</dd>
+	<dd>{{ machine.first_race.date_time }} - {{ machine.last_race.date_time }}</dd>
 	{% for org, events in machine.events_by_organization.items %}
 		<dt>Events run with {{ org }}</dt>
 		<dd>{{ events |join:", " }}</dd>

@@ -1,5 +1,6 @@
 from django.db import models
 from decimal import Decimal
+from datetime import datetime
 
 # Machine
 
@@ -18,10 +19,10 @@ class Machine(models.Model):
 		return Race.objects.filter(machine_config__machine=self).order_by('date')
 
 	def first_race(self):
-		return Lap.objects.filter(race__machine_config__machine=self).order_by('race__date')[0].race
+		return Lap.objects.filter(race__machine_config__machine=self).order_by('race__date_time')[0].race
 
 	def last_race(self):
-		return Lap.objects.filter(race__machine_config__machine=self).order_by('-race__date')[0].race
+		return Lap.objects.filter(race__machine_config__machine=self).order_by('-race__date_time')[0].race
 
 	def unique_configuration_keys(self):
 		keys = []
@@ -115,7 +116,7 @@ class Racer(models.Model):
 class Race(models.Model):
 	name = models.CharField(max_length=100)
 	machine_config = models.ForeignKey(MachineConfiguration, blank=True, null=True, related_name='races')
-	date = models.DateField()
+	date_time = models.DateTimeField()
 	track = models.ForeignKey(Track, related_name="races")
 	organization = models.CharField(max_length=100)
 	conditions = models.CharField(max_length=100)
@@ -124,7 +125,7 @@ class Race(models.Model):
 		return self.track.name
 
 	class Meta:
-		unique_together = ('name', 'date', 'track', 'organization')
+		unique_together = ('name', 'date_time', 'track', 'organization')
 
 	def best_lap_time(self):
 		best = None
