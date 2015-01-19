@@ -181,6 +181,7 @@ def edit_race(request, race_id):
 		if form.has_changed():
 			if form.is_valid():
 				race.name = form.cleaned_data['name']
+				race.date = form.cleaned_data['date']
 				race.track = Track.objects.get(name=form.cleaned_data['track_name'])
 				race.num_laps = form.cleaned_data['num_laps']
 				if not(race.machine_config.machine.name == form.cleaned_data['name']):
