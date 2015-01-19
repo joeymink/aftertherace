@@ -55,3 +55,7 @@ class EditLapsForm(forms.Form):
 
 	def num_laps(self):
 		return self.num_laps
+
+class AddConfigurationAttributeToRaceForm(forms.Form):
+	key = forms.CharField(label='Key', max_length=100)
+	value = forms.CharField(label='Value', max_length=100)

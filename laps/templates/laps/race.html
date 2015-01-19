@@ -68,6 +68,15 @@
 					<td>{{ attr.value }}</td>
 				</tr>
 			{% endfor %}
+			{% if add_config_attr_form %}
+				<tr>
+					<form action="/laps/races/{{race.id}}/edit/add_config_attr" method="post">
+						{% csrf_token %}
+						<td>{{add_config_attr_form.key}}</td>
+						<td>{{add_config_attr_form.value}} <input type="submit" value="Add" /></td>
+					</form>
+				</tr>
+			{% endif %}
 			</table>
 		</div>
 	</div>

@@ -1,4 +1,4 @@
-from laps.models import Lap, Machine, MachineConfiguration, Race, Racer, Track
+from laps.models import ConfigurationAttribute, Lap, Machine, MachineConfiguration, Race, Racer, Track
 from django.shortcuts import get_object_or_404, render, HttpResponseRedirect
 from django.db.models import Q
 from django.views.generic import DetailView
@@ -36,7 +36,24 @@ def races(request):
 
 def race(request, race_id):
 	race = get_object_or_404(Race, pk=race_id)
-	return render(request, 'laps/race.html', {'race': race })
+	template_dict = { 'race': race }
+	if request.user.is_authenticated():
+		template_dict['add_config_attr_form'] = forms.AddConfigurationAttributeToRaceForm()
+	return render(request, 'laps/race.html', template_dict)
+
+@login_required
+def add_config_attr_to_race(request, race_id):
+	race = Race.objects.get(id=race_id)
+	if request.method == 'POST':
+		form = forms.AddConfigurationAttributeToRaceForm(request.POST)
+		if form.has_changed():
+			if form.is_valid():
+				key = form.cleaned_data['key']
+				value = form.cleaned_data['value']
+				attr, created = ConfigurationAttribute.objects.get_or_create(key=key, value=value)
+				attr.machine_configurations.add(race.machine_config)
+				attr.save()
+	return HttpResponseRedirect("/laps/races/%d" % race.id)
 
 def machine(request, machine_id):
 	machine = get_object_or_404(Machine, pk=machine_id)
