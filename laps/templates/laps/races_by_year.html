@@ -5,7 +5,7 @@
 			{% if date.year == year %}
 				<div class="col-md-11 col-md-offset-1"><strong>{{ date|date:"M d" }}</strong></div>
 				{% for race in races %}
-					{% if race.date == date %}
+					{% if race.date_time == date %}
 						<div class="col-md-3 col-md-offset-2">
 							<span class="glyphicon glyphicon-flag" aria-hidden="true"></span>
 							<a href="{% url 'laps:race' race.id %}">

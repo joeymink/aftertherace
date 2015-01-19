@@ -1,4 +1,4 @@
-from laps.models import Lap, Machine, Race, Racer, Track
+from laps.models import ConfigurationAttribute, Lap, Machine, MachineConfiguration, Race, Racer, Track
 from django.shortcuts import get_object_or_404, render, HttpResponseRedirect
 from django.db.models import Q
 from django.views.generic import DetailView
@@ -14,16 +14,16 @@ class RacesByYear:
 	dates=None
 
 	def get_races(self, race_filter_q=Q()):
-		self.races = Race.objects.filter(race_filter_q).order_by('date')
+		self.races = Race.objects.filter(race_filter_q).order_by('date_time')
 		self.years = []
 		self.dates = []
 		race_by_date={}
 		for race in self.races:
-			year = race.date.year
+			year = race.date_time.year
 			if not(year in self.years):
 				self.years.append(year)
-			if not(race.date in self.dates):
-				self.dates.append(race.date)
+			if not(race.date_time in self.dates):
+				self.dates.append(race.date_time)
 
 
 def races(request):
@@ -36,7 +36,24 @@ def races(request):
 
 def race(request, race_id):
 	race = get_object_or_404(Race, pk=race_id)
-	return render(request, 'laps/race.html', {'race': race })
+	template_dict = { 'race': race }
+	if request.user.is_authenticated():
+		template_dict['add_config_attr_form'] = forms.AddConfigurationAttributeToRaceForm()
+	return render(request, 'laps/race.html', template_dict)
+
+@login_required
+def add_config_attr_to_race(request, race_id):
+	race = Race.objects.get(id=race_id)
+	if request.method == 'POST':
+		form = forms.AddConfigurationAttributeToRaceForm(request.POST)
+		if form.has_changed():
+			if form.is_valid():
+				key = form.cleaned_data['key']
+				value = form.cleaned_data['value']
+				attr, created = ConfigurationAttribute.objects.get_or_create(key=key, value=value)
+				attr.machine_configurations.add(race.machine_config)
+				attr.save()
+	return HttpResponseRedirect("/laps/races/%d" % race.id)
 
 def machine(request, machine_id):
 	machine = get_object_or_404(Machine, pk=machine_id)
@@ -76,7 +93,7 @@ class LapTrendAJAXView(JSONResponseMixin, DetailView):
 	def get(self, request, *args, **kwargs):
 		track_id = kwargs['track_id']
 		track = Track.objects.get(pk=track_id)
-		races = Race.objects.filter(track=track).order_by('date')
+		races = Race.objects.filter(track=track).order_by('date_time')
 		result = {
 			u'best': [],
 			u'avg': [],
@@ -86,7 +103,7 @@ class LapTrendAJAXView(JSONResponseMixin, DetailView):
 			result['best'].append(race.best_lap_time())
 			result['avg'].append(race.average_lap_time())
 			result['race'].append({
-				u'date': race.date,
+				u'date': race.date_time,
 				u'name': race.name,
 				u'id': race.id
 				})
@@ -128,6 +145,33 @@ class TracksRacedAJAXView(JSONResponseMixin, DetailView):
 
 		return self.render_json_response(result)
 
+# TODO: allow more than one racer! synonymous with user?
+def current_racers_bike(name):
+	return Machine.objects.get(name=name)
+
+@login_required
+def create_race(request):
+	if request.method == 'POST':
+		form = forms.EditRaceForm(request.POST)
+		if form.has_changed():
+			if form.is_valid():
+				machine = current_racers_bike(form.cleaned_data['machine_name'])
+				config = machine.empty_configuration()
+
+				race = Race()
+				race.name = form.cleaned_data['name']
+				race.date_time = form.cleaned_data['date_time']
+				race.track = Track.objects.get(name=form.cleaned_data['track_name'])
+				race.num_laps = form.cleaned_data['num_laps']
+				race.machine_config = config
+				race.save()
+				return HttpResponseRedirect("/laps/races/%d/edit/laps" % race.id)
+	else:
+		# TODO: initial values (date=today, )
+		#initial_form_values = race.__dict__
+		#form = forms.EditRaceForm(initial_form_values)
+		form = forms.EditRaceForm()
+	return render(request, 'laps/new_race.html', { 'form':form })
 
 @login_required
 def edit_race(request, race_id):
@@ -137,11 +181,19 @@ def edit_race(request, race_id):
 		if form.has_changed():
 			if form.is_valid():
 				race.name = form.cleaned_data['name']
+				race.date = form.cleaned_data['date']
+				race.track = Track.objects.get(name=form.cleaned_data['track_name'])
 				race.num_laps = form.cleaned_data['num_laps']
+				if not(race.machine_config.machine.name == form.cleaned_data['name']):
+					# The machine was changed
+					machine = current_racers_bike(form.cleaned_data['machine_name'])
+					race.machine_config = machine.empty_configuration()
 				race.save()
 				return HttpResponseRedirect("/laps/races/%d/edit/laps" % race.id)
 	else:
 		initial_form_values = race.__dict__
+		initial_form_values['machine_name'] = race.machine_config.machine.name
+		initial_form_values['track_name'] = race.track.name 
 		form = forms.EditRaceForm(initial_form_values)
 	return render(request, 'laps/edit_race.html', { 'form':form, 'race':race })
 
