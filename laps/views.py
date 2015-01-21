@@ -231,6 +231,11 @@ def edit_race_laps(request, race_id):
 					except Lap.DoesNotExist:
 						# Create a new lap:
 						lap, created = Lap.objects.get_or_create(race=race, num=lap_num, time=lap_time_s, racer=current_racer())
+					except MultipleObjectsReturned:
+						# TODO: had an issue with race that had same lap number twice...
+						# TODO: maybe ensure uniqueness here?
+						Lap.objects.filter(race=race, num=lap_num).delete()
+						lap, created = Lap.objects.get_or_create(race=race, num=lap_num, time=lap_time_s, racer=current_racer())
 					lap.save()
 		else:
 			raise Exception('Invalid form submission')
