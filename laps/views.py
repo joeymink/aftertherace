@@ -184,7 +184,7 @@ def edit_race(request, race_id):
 				race.date_time = form.cleaned_data['date_time']
 				race.track = Track.objects.get(name=form.cleaned_data['track_name'])
 				race.num_laps = form.cleaned_data['num_laps']
-				if not(race.machine_config.machine.name == form.cleaned_data['name']):
+				if not(race.machine_config.machine.name == form.cleaned_data['machine_name']):
 					# The machine was changed
 					machine = current_racers_bike(form.cleaned_data['machine_name'])
 					race.machine_config = machine.empty_configuration()
@@ -215,7 +215,7 @@ def edit_race_laps(request, race_id):
 		form = forms.EditLapsForm(request.POST, num_laps=race.num_laps, laps=laps)
 		if form.is_valid():
 			lap_dict = form.get_lap_dict()
-			for lap_num in xrange(1, form.num_laps + 1):
+			for lap_num in xrange(1, form.num_laps + 1): # TODO: Maybe delete all laps and recreate?
 				if not(lap_num in lap_dict) or not(lap_dict[lap_num]):	# no lap time given
 					try:
 						lap = Lap.objects.get(race=race, num=lap_num)
