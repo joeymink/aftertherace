@@ -4,7 +4,7 @@ from laps.models import Lap, Machine, Race, Racer, Track
 
 class EditRaceForm(forms.Form):
 	name = forms.CharField(label='Name', max_length=100)
-	date_time = forms.DateField(label="Date")
+	date_time = forms.DateTimeField(label="Date")
 	machine_name = forms.ChoiceField(label='Machine')
 	track_name = forms.ChoiceField(label='Track')
 	num_laps = forms.IntegerField(label='# Laps')
