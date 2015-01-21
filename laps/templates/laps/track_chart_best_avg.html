@@ -19,7 +19,7 @@
 	            type: 'line'
 	        },
 	        title: {
-	            text: 'Best, Average Laps at {{ track.name }}'
+	            text: 'Lap Trend @ {{ track.name }}'
 	        },
 	        xAxis: {
 	        	title: {
@@ -27,7 +27,10 @@
 	        	},
 	        	labels: {
 	        		formatter: function() {
-	        			return this.value.date;
+						var d = new Date();
+            			d.setTime(Date.parse(this.value.date));
+						var dateStr = (d.getMonth() + 1).toString() + "/" + d.getDate().toString() + "/" + d.getFullYear().toString()
+	        			return dateStr;
 	        		}
 	        	},
 	            categories: data.race
