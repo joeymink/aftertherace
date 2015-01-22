@@ -6,7 +6,7 @@ from braces.views import JSONResponseMixin
 
 from django.contrib.auth.decorators import login_required
 
-import forms, util
+import datetime, forms, util
 
 class RacesByYear:
 	races=None
@@ -22,8 +22,8 @@ class RacesByYear:
 			year = race.date_time.year
 			if not(year in self.years):
 				self.years.append(year)
-			if not(race.date_time in self.dates):
-				self.dates.append(race.date_time)
+			if not(race.date_time.date() in self.dates):
+				self.dates.append(race.date_time.date())
 
 
 def races(request):
