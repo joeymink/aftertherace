@@ -184,6 +184,7 @@ def edit_race(request, race_id):
 				race.date_time = form.cleaned_data['date_time']
 				race.track = Track.objects.get(name=form.cleaned_data['track_name'])
 				race.num_laps = form.cleaned_data['num_laps']
+				race.organization = form.cleaned_data['organization']
 				if not(race.machine_config.machine.name == form.cleaned_data['machine_name']):
 					# The machine was changed
 					machine = current_racers_bike(form.cleaned_data['machine_name'])
