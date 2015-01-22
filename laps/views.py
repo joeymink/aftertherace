@@ -6,7 +6,7 @@ from braces.views import JSONResponseMixin
 
 from django.contrib.auth.decorators import login_required
 
-import forms, util
+import datetime, forms, util
 
 class RacesByYear:
 	races=None
@@ -22,8 +22,8 @@ class RacesByYear:
 			year = race.date_time.year
 			if not(year in self.years):
 				self.years.append(year)
-			if not(race.date_time in self.dates):
-				self.dates.append(race.date_time)
+			if not(race.date_time.date() in self.dates):
+				self.dates.append(race.date_time.date())
 
 
 def races(request):
@@ -184,6 +184,7 @@ def edit_race(request, race_id):
 				race.date_time = form.cleaned_data['date_time']
 				race.track = Track.objects.get(name=form.cleaned_data['track_name'])
 				race.num_laps = form.cleaned_data['num_laps']
+				race.organization = form.cleaned_data['organization']
 				if not(race.machine_config.machine.name == form.cleaned_data['machine_name']):
 					# The machine was changed
 					machine = current_racers_bike(form.cleaned_data['machine_name'])
