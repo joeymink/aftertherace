@@ -16,7 +16,7 @@ class Machine(models.Model):
 		return Lap.objects.filter(race__machine_config__machine=self).count()
 
 	def races(self):
-		return Race.objects.filter(machine_config__machine=self).order_by('date')
+		return Race.objects.filter(machine_config__machine=self).order_by('date_time')
 
 	def first_race(self):
 		return Lap.objects.filter(race__machine_config__machine=self).order_by('race__date_time')[0].race
@@ -145,10 +145,10 @@ class Race(models.Model):
 
 
 def get_or_create_race(name=None, date=None, track=None, organization=None, machine_config=None, conditions=None):
-	q = Race.objects.filter(name=name, date=date, track=track, organization=organization)
+	q = Race.objects.filter(name=name, date_time=date, track=track, organization=organization)
 	if len(q) > 0:
 		return q[0]
-	return Race.objects.create(name=name, date=date, track=track, organization=organization, machine_config=machine_config, conditions=conditions)
+	return Race.objects.create(name=name, date_time=date, track=track, organization=organization, machine_config=machine_config, conditions=conditions)
 
 class Lap(models.Model):
 	race = models.ForeignKey(Race, related_name='laps')
