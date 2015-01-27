@@ -1,6 +1,7 @@
 from django.db import models
 from decimal import Decimal
 from datetime import datetime
+from django.conf import settings
 
 # Machine
 
@@ -9,6 +10,8 @@ class Machine(models.Model):
 	make = models.CharField(max_length=100)
 	model = models.CharField(max_length=100)
 	year = models.IntegerField()
+	user = models.ForeignKey(settings.AUTH_USER_MODEL)
+
 	def __unicode__(self):
 		return self.name
 
@@ -121,11 +124,13 @@ class Race(models.Model):
 	organization = models.CharField(max_length=100)
 	conditions = models.CharField(max_length=100)
 	num_laps = models.IntegerField(default=0)
+	user = models.ForeignKey(settings.AUTH_USER_MODEL)
+
 	def __unicode__(self):
 		return self.track.name
 
 	class Meta:
-		unique_together = ('name', 'date_time', 'track', 'organization')
+		unique_together = ('name', 'date_time', 'track', 'organization', 'user')
 
 	def best_lap_time(self):
 		best = None
