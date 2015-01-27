@@ -12,9 +12,10 @@
       <a class="navbar-brand" href="/" style="padding:5px; padding-left:15px">
         <img alt="Brand" src="https://s3-us-west-2.amazonaws.com/aftertherace.joeymink.com/logo/aftertherace_bw_50.png">
       </a>
-      <p class="navbar-text"><a href="{% url 'laps:machines' %}">Machines</a></p>
-      <p class="navbar-text"><a href="{% url 'laps:tracks' %}">Tracks</a></p>
-      <p class="navbar-text"><a href="{% url 'laps:races' %}">Races</a></p>
+      <p class="navbar-text">[ {{ racer }} ]</p>
+      <p class="navbar-text"><a href="{% url 'laps:machines' racer %}">Machines</a></p>
+      <p class="navbar-text"><a href="{% url 'laps:tracks' racer %}">Tracks</a></p>
+      <p class="navbar-text"><a href="{% url 'laps:races' racer %}">Races</a></p>
     </div>
   </div>
 </nav>

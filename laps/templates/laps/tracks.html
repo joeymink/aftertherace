@@ -5,7 +5,7 @@
 {% if tracks %}
 	<ul class="list-group">
 	{% for track in tracks %}
-			<a href="{% url 'laps:track' track.id %}" class="list-group-item">
+			<a href="{% url 'laps:track' racer track.id %}" class="list-group-item">
 					<span class="glyphicon glyphicon-road" aria-hidden="true"></span> {{ track.name }}
 			</a>
 	{% endfor %}

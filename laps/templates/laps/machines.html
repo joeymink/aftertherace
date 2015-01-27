@@ -6,7 +6,7 @@
 	<ul class="list-group">
 	{% for machine in machines %}
 			<!-- span class="badge">races {{ machine.races.count }}</span -->
-			<a href="{% url 'laps:machine' machine.id %}" class="list-group-item">
+			<a href="{% url 'laps:machine' racer machine.id %}" class="list-group-item">
 					{{ machine.name }}
 			</a>
 	{% endfor %}

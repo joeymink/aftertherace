@@ -6,7 +6,13 @@ from braces.views import JSONResponseMixin
 
 from django.contrib.auth.decorators import login_required
 
+from django.contrib.auth import get_user_model
+
 import datetime, forms, util
+
+def racer(request, username):
+	user = get_user_model().objects.get(username=username)
+	return render(request, 'laps/racer.html', {'racer':user.username})
 
 class RacesByYear:
 	races=None
@@ -26,17 +32,22 @@ class RacesByYear:
 				self.dates.append(race.date_time.date())
 
 
-def races(request):
+def races(request, username):
+	user = get_user_model().objects.get(username=username)
 	races = RacesByYear()
-	races.get_races()
+	races.get_races(Q(user=user))
 	return render(request, 'laps/races.html', {
+		'racer':user.username,
 		'races':races.races,
 		'years':races.years,
 		'dates':races.dates })
 
-def race(request, race_id):
+def race(request, username, race_id):
+	user = get_user_model().objects.get(username=username)
 	race = get_object_or_404(Race, pk=race_id)
-	template_dict = { 'race': race }
+	template_dict = {
+		'racer': user.username,
+		'race': race }
 	if request.user.is_authenticated():
 		template_dict['add_config_attr_form'] = forms.AddConfigurationAttributeToRaceForm()
 	return render(request, 'laps/race.html', template_dict)
@@ -55,29 +66,39 @@ def add_config_attr_to_race(request, race_id):
 				attr.save()
 	return HttpResponseRedirect("/laps/races/%d" % race.id)
 
-def machine(request, machine_id):
+def machine(request, username, machine_id):
+	user = get_user_model().objects.get(username=username)
 	machine = get_object_or_404(Machine, pk=machine_id)
 	races = RacesByYear()
 	races.get_races(Q(machine_config__machine=machine))
 	return render(request, 'laps/machine.html', {
+		'racer' : user.username,
 		'machine': machine,
 		'races':races.races,
 		'years':races.years,
 		'dates':races.dates})
 
-def machines(request):
-	machines = Machine.objects.all()
-	return render(request, 'laps/machines.html', {'machines': machines })
+def machines(request, username):
+	user = get_user_model().objects.get(username=username)
+	machines = Machine.objects.filter(user=user)
+	return render(request, 'laps/machines.html', {
+		'racer' : user.username,
+		'machines': machines})
 
-def tracks(request):
-	tracks = Track.objects.all()
-	return render(request, 'laps/tracks.html', {'tracks': tracks })
+def tracks(request, username):
+	user = get_user_model().objects.get(username=username)
+	tracks = Track.objects.filter(races__user=user).distinct()
+	return render(request, 'laps/tracks.html', {
+		'racer':user.username,
+		'tracks': tracks })
 
-def track(request, track_id):
+def track(request, username, track_id):
+	user = get_user_model().objects.get(username=username)
 	track = get_object_or_404(Track, pk=track_id)
 	races = RacesByYear()
 	races.get_races(Q(track__id=track_id))
 	return render(request, 'laps/track.html', {
+		'racer': user.username,
 		'track': track,
 		'races':races.races,
 		'years':races.years,
