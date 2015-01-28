@@ -7,6 +7,8 @@ from braces.views import JSONResponseMixin
 from django.contrib.auth.decorators import login_required
 
 from django.contrib.auth import get_user_model
+from django.core.exceptions import PermissionDenied
+from django.core.urlresolvers import reverse
 
 import datetime, forms, util
 
@@ -171,7 +173,10 @@ def current_racers_bike(name):
 	return Machine.objects.get(name=name)
 
 @login_required
-def create_race(request):
+def create_race(request, username):
+	user = get_object_or_404(get_user_model(), username=username)
+	if not(user.username == request.user.username):
+		raise PermissionDenied
 	if request.method == 'POST':
 		form = forms.EditRaceForm(request.POST)
 		if form.has_changed():
@@ -185,14 +190,15 @@ def create_race(request):
 				race.track = Track.objects.get(name=form.cleaned_data['track_name'])
 				race.num_laps = form.cleaned_data['num_laps']
 				race.machine_config = config
+				race.user = user
 				race.save()
-				return HttpResponseRedirect("/laps/races/%d/edit/laps" % race.id)
+				return HttpResponseRedirect(reverse('laps:edit_race_laps', args=(username, race.id)))
 	else:
 		# TODO: initial values (date=today, )
 		#initial_form_values = race.__dict__
 		#form = forms.EditRaceForm(initial_form_values)
 		form = forms.EditRaceForm()
-	return render(request, 'laps/new_race.html', { 'form':form })
+	return render(request, 'laps/new_race.html', { 'form':form, 'racer': user.username })
 
 @login_required
 def edit_race(request, race_id):
@@ -225,12 +231,15 @@ def current_racer():
 	return Racer.objects.all()[0]
 
 @login_required
-def edit_race_laps(request, race_id):
+def edit_race_laps(request, username, race_id):
+	user = get_object_or_404(get_user_model(), username=username)
+	if not(user.username == request.user.username):
+		raise PermissionDenied
 	race = get_object_or_404(Race, pk=race_id)
 	laps = Lap.objects.filter(race__id=race_id)
 	if race.num_laps == 0:
 		# No laps to enter/edit, so just return to the race page
-		return HttpResponseRedirect("/laps/races/%d" % race.id)
+		return HttpResponseRedirect(reverse('laps:race', args=(username, race.id)))
 
 	if request.method == 'POST':
 		# TODO: include notification to say update was successful
@@ -261,9 +270,9 @@ def edit_race_laps(request, race_id):
 					lap.save()
 		else:
 			raise Exception('Invalid form submission')
-		return HttpResponseRedirect("/laps/races/%d" % race.id)
+		return HttpResponseRedirect(reverse('laps:race', args=(username, race.id)))
 	else:
 		form = forms.EditLapsForm(num_laps=race.num_laps, laps=laps)
-	return render(request, 'laps/edit_laps.html', { 'form':form, 'race':race })
+	return render(request, 'laps/edit_laps.html', { 'form':form, 'race':race, 'racer':user.username })
 
 

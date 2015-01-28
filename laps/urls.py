@@ -6,10 +6,10 @@ urlpatterns = patterns('',
     url(r'^(?P<username>[a-z0-9_]+)/$', views.racer, name='racer'),
 
     url(r'^(?P<username>[a-z0-9_]+)/races/$', views.races, name='races'),
-    url(r'^races/new/$', views.create_race, name='create_race'),
+    url(r'^(?P<username>[a-z0-9_]+)/races/new/$', views.create_race, name='create_race'),
     url(r'^(?P<username>[a-z0-9_]+)/races/(?P<race_id>\d+)/?$', views.race, name='race'),
     url(r'^races/(?P<race_id>\d+)/edit/?$', views.edit_race, name='edit_race'),
-    url(r'^races/(?P<race_id>\d+)/edit/laps/?$', views.edit_race_laps, name='edit_race_laps'),
+    url(r'^(?P<username>[a-z0-9_]+)/races/(?P<race_id>\d+)/edit/laps/?$', views.edit_race_laps, name='edit_race_laps'),
     url(r'^races/(?P<race_id>\d+)/edit/add_config_attr/?$', views.add_config_attr_to_race, name='add_config_attr_to_race'),
     url(r'^races/(?P<race_id>\d+)/chart_laps/?$', views.LapsAJAXView.as_view()),
     
