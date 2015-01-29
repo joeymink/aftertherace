@@ -45,8 +45,8 @@ def races(request, username):
 		'dates':races.dates })
 
 def race(request, username, race_id):
-	user = get_user_model().objects.get(username=username)
-	race = get_object_or_404(Race, pk=race_id)
+	user = get_object_or_404(get_user_model(), username=username)
+	race = get_object_or_404(Race, pk=race_id, user=user)
 	template_dict = {
 		'racer': user.username,
 		'race': race }
@@ -75,8 +75,8 @@ def add_config_attr_to_race(request, username, race_id):
 	return HttpResponseRedirect(reverse('laps:race', args=(username, race.id)))
 
 def machine(request, username, machine_id):
-	user = get_user_model().objects.get(username=username)
-	machine = get_object_or_404(Machine, pk=machine_id)
+	user = get_object_or_404(get_user_model(), username=username)
+	machine = get_object_or_404(Machine, pk=machine_id, user=user)
 	races = RacesByYear()
 	races.get_races(Q(machine_config__machine=machine))
 	return render(request, 'laps/machine.html', {
@@ -87,21 +87,21 @@ def machine(request, username, machine_id):
 		'dates':races.dates})
 
 def machines(request, username):
-	user = get_user_model().objects.get(username=username)
+	user = get_object_or_404(get_user_model(), username=username)
 	machines = Machine.objects.filter(user=user)
 	return render(request, 'laps/machines.html', {
 		'racer' : user.username,
 		'machines': machines})
 
 def tracks(request, username):
-	user = get_user_model().objects.get(username=username)
+	user = get_object_or_404(get_user_model(), username=username)
 	tracks = Track.objects.filter(races__user=user).distinct()
 	return render(request, 'laps/tracks.html', {
 		'racer':user.username,
 		'tracks': tracks })
 
 def track(request, username, track_id):
-	user = get_user_model().objects.get(username=username)
+	user = get_object_or_404(get_user_model(), username=username)
 	track = get_object_or_404(Track, pk=track_id)
 	races = RacesByYear()
 	races.get_races(Q(track__id=track_id))
@@ -120,9 +120,12 @@ class LapTrendAJAXView(JSONResponseMixin, DetailView):
 	json_dumps_kwargs = {u"indent": 2}
 
 	def get(self, request, *args, **kwargs):
+		username = kwargs['username']
 		track_id = kwargs['track_id']
-		track = Track.objects.get(pk=track_id)
-		races = Race.objects.filter(track=track).order_by('date_time')
+
+		user = get_object_or_404(get_user_model(), username=username)
+		track = get_object_or_404(Track, pk=track_id)
+		races = Race.objects.filter(track=track, user=user).order_by('date_time')
 		result = {
 			u'best': [],
 			u'avg': [],
@@ -144,8 +147,11 @@ class LapsAJAXView(JSONResponseMixin, DetailView):
 	json_dumps_kwargs = {u"indent": 2}
 
 	def get(self, request, *args, **kwargs):
+		username = kwargs['username']
 		race_id = kwargs['race_id']
-		race = Race.objects.get(pk=race_id)
+
+		user = get_object_or_404(get_user_model(), username=username)
+		race = get_object_or_404(Race, pk=race_id, user=user)
 		result = []
 		for lap in race.laps.values('num', 'time'):
 			result.append({u'num': lap['num'], u'time': lap['time']})
@@ -157,8 +163,11 @@ class TracksRacedAJAXView(JSONResponseMixin, DetailView):
 	json_dumps_kwargs = {u"indent": 2}
 
 	def get(self, request, *args, **kwargs):
+		username = kwargs['username']
 		machine_id = kwargs['machine_id']
-		machine = Machine.objects.get(pk=machine_id)
+		
+		user = get_object_or_404(get_user_model(), username=username)
+		machine = get_object_or_404(Machine, pk=machine_id, user=user)
 		result = []
 		for track in Track.objects.all().order_by('name'):
 			num_races = Race.objects.filter(track=track, machine_config__machine=machine).count()
