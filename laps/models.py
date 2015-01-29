@@ -107,6 +107,7 @@ class Track(models.Model):
 # Racer
 
 class Racer(models.Model):
+	# TODO: does this model even need to exist anymore?
 	first = models.CharField(max_length=100)
 	last = models.CharField(max_length=100)
 	middle = models.CharField(max_length=100)
@@ -159,4 +160,3 @@ class Lap(models.Model):
 	race = models.ForeignKey(Race, related_name='laps')
 	num = models.IntegerField()
 	time = models.DecimalField(max_digits=6, decimal_places=3)
-	racer = models.ForeignKey(Racer, related_name='laps')

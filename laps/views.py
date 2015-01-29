@@ -1,4 +1,4 @@
-from laps.models import ConfigurationAttribute, Lap, Machine, MachineConfiguration, Race, Racer, Track
+from laps.models import ConfigurationAttribute, Lap, Machine, MachineConfiguration, Race, Track
 from django.shortcuts import get_object_or_404, render, HttpResponseRedirect
 from django.db.models import Q
 from django.views.generic import DetailView
@@ -183,20 +183,16 @@ class TracksRacedAJAXView(JSONResponseMixin, DetailView):
 
 		return self.render_json_response(result)
 
-# TODO: allow more than one racer! synonymous with user?
-def current_racers_bike(name):
-	return Machine.objects.get(name=name)
-
 @login_required
 def create_race(request, username):
 	user = get_object_or_404(get_user_model(), username=username)
 	if not(user.username == request.user.username):
 		raise PermissionDenied
 	if request.method == 'POST':
-		form = forms.EditRaceForm(request.POST)
+		form = forms.EditRaceForm(request.POST, user=user)
 		if form.has_changed():
 			if form.is_valid():
-				machine = current_racers_bike(form.cleaned_data['machine_name'])
+				machine = Machine.objects.get(name=form.cleaned_data['machine_name'], user=user)
 				config = machine.empty_configuration()
 
 				race = Race()
@@ -212,7 +208,7 @@ def create_race(request, username):
 		# TODO: initial values (date=today, )
 		#initial_form_values = race.__dict__
 		#form = forms.EditRaceForm(initial_form_values)
-		form = forms.EditRaceForm()
+		form = forms.EditRaceForm(user=user)
 	return render(request, 'laps/new_race.html', { 'form':form, 'racer': user.username })
 
 @login_required
@@ -225,7 +221,7 @@ def edit_race(request, username, race_id):
 		raise PermissionDenied
 
 	if request.method == 'POST':
-		form = forms.EditRaceForm(request.POST)
+		form = forms.EditRaceForm(request.POST, user=user)
 		if form.has_changed():
 			if form.is_valid():
 				race.name = form.cleaned_data['name']
@@ -235,7 +231,7 @@ def edit_race(request, username, race_id):
 				race.organization = form.cleaned_data['organization']
 				if not(race.machine_config.machine.name == form.cleaned_data['machine_name']):
 					# The machine was changed
-					machine = current_racers_bike(form.cleaned_data['machine_name'])
+					machine = Machine.objects.get(name=form.cleaned_data['machine_name'], user=user)
 					race.machine_config = machine.empty_configuration()
 				race.save()
 				return HttpResponseRedirect(reverse('laps:edit_race_laps', args=(username, race.id)))
@@ -244,12 +240,8 @@ def edit_race(request, username, race_id):
 		initial_form_values['machine_name'] = race.machine_config.machine.name
 		initial_form_values['track_name'] = race.track.name
 		initial_form_values['num_laps'] = race.num_laps
-		form = forms.EditRaceForm(initial_form_values)
+		form = forms.EditRaceForm(initial_form_values, user=user)
 	return render(request, 'laps/edit_race.html', { 'form':form, 'race':race, 'racer': username })
-
-# TODO: allow more than one racer! synonymous with user?
-def current_racer():
-	return Racer.objects.all()[0]
 
 @login_required
 def edit_race_laps(request, username, race_id):
@@ -285,12 +277,12 @@ def edit_race_laps(request, username, race_id):
 						lap.time = lap_time_s
 					except Lap.DoesNotExist:
 						# Create a new lap:
-						lap, created = Lap.objects.get_or_create(race=race, num=lap_num, time=lap_time_s, racer=current_racer())
+						lap, created = Lap.objects.get_or_create(race=race, num=lap_num, time=lap_time_s)
 					except Lap.MultipleObjectsReturned:
 						# TODO: had an issue with race that had same lap number twice...
 						# TODO: maybe ensure uniqueness here?
 						Lap.objects.filter(race=race, num=lap_num).delete()
-						lap, created = Lap.objects.get_or_create(race=race, num=lap_num, time=lap_time_s, racer=current_racer())
+						lap, created = Lap.objects.get_or_create(race=race, num=lap_num, time=lap_time_s)
 					lap.save()
 		else:
 			raise Exception('Invalid form submission')
