@@ -55,8 +55,14 @@ def race(request, username, race_id):
 	return render(request, 'laps/race.html', template_dict)
 
 @login_required
-def add_config_attr_to_race(request, race_id):
-	race = Race.objects.get(id=race_id)
+def add_config_attr_to_race(request, username, race_id):
+	user = get_object_or_404(get_user_model(), username=username)
+	if not(user.username == request.user.username):
+		raise PermissionDenied
+	race = get_object_or_404(Race, pk=race_id)
+	if not(race.user == user):
+		raise PermissionDenied
+
 	if request.method == 'POST':
 		form = forms.AddConfigurationAttributeToRaceForm(request.POST)
 		if form.has_changed():
@@ -66,7 +72,7 @@ def add_config_attr_to_race(request, race_id):
 				attr, created = ConfigurationAttribute.objects.get_or_create(key=key, value=value)
 				attr.machine_configurations.add(race.machine_config)
 				attr.save()
-	return HttpResponseRedirect("/laps/races/%d" % race.id)
+	return HttpResponseRedirect(reverse('laps:race', args=(username, race.id)))
 
 def machine(request, username, machine_id):
 	user = get_user_model().objects.get(username=username)
@@ -201,8 +207,14 @@ def create_race(request, username):
 	return render(request, 'laps/new_race.html', { 'form':form, 'racer': user.username })
 
 @login_required
-def edit_race(request, race_id):
+def edit_race(request, username, race_id):
+	user = get_object_or_404(get_user_model(), username=username)
+	if not(user.username == request.user.username):
+		raise PermissionDenied
 	race = get_object_or_404(Race, pk=race_id)
+	if not(race.user == user):
+		raise PermissionDenied
+
 	if request.method == 'POST':
 		form = forms.EditRaceForm(request.POST)
 		if form.has_changed():
@@ -217,14 +229,14 @@ def edit_race(request, race_id):
 					machine = current_racers_bike(form.cleaned_data['machine_name'])
 					race.machine_config = machine.empty_configuration()
 				race.save()
-				return HttpResponseRedirect("/laps/races/%d/edit/laps" % race.id)
+				return HttpResponseRedirect(reverse('laps:edit_race_laps', args=(username, race.id)))
 	else:
 		initial_form_values = race.__dict__
 		initial_form_values['machine_name'] = race.machine_config.machine.name
 		initial_form_values['track_name'] = race.track.name
 		initial_form_values['num_laps'] = race.num_laps
 		form = forms.EditRaceForm(initial_form_values)
-	return render(request, 'laps/edit_race.html', { 'form':form, 'race':race })
+	return render(request, 'laps/edit_race.html', { 'form':form, 'race':race, 'racer': username })
 
 # TODO: allow more than one racer! synonymous with user?
 def current_racer():
@@ -236,6 +248,9 @@ def edit_race_laps(request, username, race_id):
 	if not(user.username == request.user.username):
 		raise PermissionDenied
 	race = get_object_or_404(Race, pk=race_id)
+	if not(race.user == user):
+		raise PermissionDenied
+
 	laps = Lap.objects.filter(race__id=race_id)
 	if race.num_laps == 0:
 		# No laps to enter/edit, so just return to the race page
