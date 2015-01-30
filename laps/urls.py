@@ -3,6 +3,7 @@ from django.conf.urls import patterns, url
 from laps import views
 
 urlpatterns = patterns('',
+    url('profile', views.profile, name='profile'),
     url(r'^(?P<username>[a-z0-9_]+)/$', views.racer, name='racer'),
 
     url(r'^(?P<username>[a-z0-9_]+)/races/$', views.races, name='races'),
