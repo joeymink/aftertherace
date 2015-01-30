@@ -83,6 +83,8 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
+LOGIN_REDIRECT_URL = '/racers/profile'
+
 # Heroku config:
 # (https://devcenter.heroku.com/articles/getting-started-with-django)
 # Parse database configuration from $DATABASE_URL

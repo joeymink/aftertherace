@@ -6,15 +6,25 @@ from braces.views import JSONResponseMixin
 
 from django.contrib.auth.decorators import login_required
 
+from django.contrib.auth import views as auth_views
 from django.contrib.auth import get_user_model
+
 from django.core.exceptions import PermissionDenied
 from django.core.urlresolvers import reverse
 
 import datetime, forms, util
 
+@login_required
+def logout(request):
+	return auth_views.logout(request, template_name='laps/logout.html')
+
 def racer(request, username):
 	user = get_user_model().objects.get(username=username)
 	return render(request, 'laps/racer.html', {'racer':user.username})
+
+@login_required
+def profile(request):
+	return racer(request, request.user.username)
 
 class RacesByYear:
 	races=None
