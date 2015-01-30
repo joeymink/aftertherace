@@ -11,15 +11,13 @@ class EditRaceForm(forms.Form):
 	num_laps = forms.IntegerField(label='# Laps')
 
 	def __init__(self, *args, **kwargs):
+		user = kwargs.pop('user')
 		super(EditRaceForm, self).__init__(*args, **kwargs)
-		# TODO: support multiple racers
-		#self.num_laps = int(kwargs.pop('racer'))
-		self.set_choices()
+		self.set_choices(user)
 
-	def set_choices(self):
+	def set_choices(self, user):
 		choices = []
-		# TODO: support multiple racers
-		for n in Machine.objects.all().values('name'):
+		for n in Machine.objects.filter(user=user).values('name'):
 			choices.append( (n['name'], n['name']) )
 		self.fields['machine_name'].choices = choices
 		

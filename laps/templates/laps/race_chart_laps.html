@@ -8,7 +8,7 @@
 	}
 
 	$(function () {
-		$.getJSON('/laps/races/{{ race.id }}/chart_laps', function( data ) {
+		$.getJSON('{% url "laps:chart_laps" racer race.id %}', function( data ) {
 		var times = [];
 		for (i = 0; i < data.length; i++)
 			times.push(parseFloat(data[i].time));

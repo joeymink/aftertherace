@@ -6,7 +6,7 @@
 </h1>
 
 <h2>Laps</h2>
-<form action="{% url 'laps:edit_race_laps' race.id %}?num_laps={{ form.num_laps }}" method="post">
+<form action="{% url 'laps:edit_race_laps' user.username race.id %}?num_laps={{ form.num_laps }}" method="post">
 	{% csrf_token %}
 	<table class="table">
 	{{ form.as_table }}

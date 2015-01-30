@@ -1,4 +1,4 @@
-from laps.models import ConfigurationAttribute, Lap, Machine, MachineConfiguration, Race, Racer, Track
+from laps.models import ConfigurationAttribute, Lap, Machine, MachineConfiguration, Race, Track
 from django.shortcuts import get_object_or_404, render, HttpResponseRedirect
 from django.db.models import Q
 from django.views.generic import DetailView
@@ -6,7 +6,15 @@ from braces.views import JSONResponseMixin
 
 from django.contrib.auth.decorators import login_required
 
+from django.contrib.auth import get_user_model
+from django.core.exceptions import PermissionDenied
+from django.core.urlresolvers import reverse
+
 import datetime, forms, util
+
+def racer(request, username):
+	user = get_user_model().objects.get(username=username)
+	return render(request, 'laps/racer.html', {'racer':user.username})
 
 class RacesByYear:
 	races=None
@@ -26,24 +34,35 @@ class RacesByYear:
 				self.dates.append(race.date_time.date())
 
 
-def races(request):
+def races(request, username):
+	user = get_user_model().objects.get(username=username)
 	races = RacesByYear()
-	races.get_races()
+	races.get_races(Q(user=user))
 	return render(request, 'laps/races.html', {
+		'racer':user.username,
 		'races':races.races,
 		'years':races.years,
 		'dates':races.dates })
 
-def race(request, race_id):
-	race = get_object_or_404(Race, pk=race_id)
-	template_dict = { 'race': race }
+def race(request, username, race_id):
+	user = get_object_or_404(get_user_model(), username=username)
+	race = get_object_or_404(Race, pk=race_id, user=user)
+	template_dict = {
+		'racer': user.username,
+		'race': race }
 	if request.user.is_authenticated():
 		template_dict['add_config_attr_form'] = forms.AddConfigurationAttributeToRaceForm()
 	return render(request, 'laps/race.html', template_dict)
 
 @login_required
-def add_config_attr_to_race(request, race_id):
-	race = Race.objects.get(id=race_id)
+def add_config_attr_to_race(request, username, race_id):
+	user = get_object_or_404(get_user_model(), username=username)
+	if not(user.username == request.user.username):
+		raise PermissionDenied
+	race = get_object_or_404(Race, pk=race_id)
+	if not(race.user == user):
+		raise PermissionDenied
+
 	if request.method == 'POST':
 		form = forms.AddConfigurationAttributeToRaceForm(request.POST)
 		if form.has_changed():
@@ -53,31 +72,41 @@ def add_config_attr_to_race(request, race_id):
 				attr, created = ConfigurationAttribute.objects.get_or_create(key=key, value=value)
 				attr.machine_configurations.add(race.machine_config)
 				attr.save()
-	return HttpResponseRedirect("/laps/races/%d" % race.id)
+	return HttpResponseRedirect(reverse('laps:race', args=(username, race.id)))
 
-def machine(request, machine_id):
-	machine = get_object_or_404(Machine, pk=machine_id)
+def machine(request, username, machine_id):
+	user = get_object_or_404(get_user_model(), username=username)
+	machine = get_object_or_404(Machine, pk=machine_id, user=user)
 	races = RacesByYear()
 	races.get_races(Q(machine_config__machine=machine))
 	return render(request, 'laps/machine.html', {
+		'racer' : user.username,
 		'machine': machine,
 		'races':races.races,
 		'years':races.years,
 		'dates':races.dates})
 
-def machines(request):
-	machines = Machine.objects.all()
-	return render(request, 'laps/machines.html', {'machines': machines })
+def machines(request, username):
+	user = get_object_or_404(get_user_model(), username=username)
+	machines = Machine.objects.filter(user=user)
+	return render(request, 'laps/machines.html', {
+		'racer' : user.username,
+		'machines': machines})
 
-def tracks(request):
-	tracks = Track.objects.all()
-	return render(request, 'laps/tracks.html', {'tracks': tracks })
+def tracks(request, username):
+	user = get_object_or_404(get_user_model(), username=username)
+	tracks = Track.objects.filter(races__user=user).distinct()
+	return render(request, 'laps/tracks.html', {
+		'racer':user.username,
+		'tracks': tracks })
 
-def track(request, track_id):
+def track(request, username, track_id):
+	user = get_object_or_404(get_user_model(), username=username)
 	track = get_object_or_404(Track, pk=track_id)
 	races = RacesByYear()
 	races.get_races(Q(track__id=track_id))
 	return render(request, 'laps/track.html', {
+		'racer': user.username,
 		'track': track,
 		'races':races.races,
 		'years':races.years,
@@ -91,9 +120,12 @@ class LapTrendAJAXView(JSONResponseMixin, DetailView):
 	json_dumps_kwargs = {u"indent": 2}
 
 	def get(self, request, *args, **kwargs):
+		username = kwargs['username']
 		track_id = kwargs['track_id']
-		track = Track.objects.get(pk=track_id)
-		races = Race.objects.filter(track=track).order_by('date_time')
+
+		user = get_object_or_404(get_user_model(), username=username)
+		track = get_object_or_404(Track, pk=track_id)
+		races = Race.objects.filter(track=track, user=user).order_by('date_time')
 		result = {
 			u'best': [],
 			u'avg': [],
@@ -115,8 +147,11 @@ class LapsAJAXView(JSONResponseMixin, DetailView):
 	json_dumps_kwargs = {u"indent": 2}
 
 	def get(self, request, *args, **kwargs):
+		username = kwargs['username']
 		race_id = kwargs['race_id']
-		race = Race.objects.get(pk=race_id)
+
+		user = get_object_or_404(get_user_model(), username=username)
+		race = get_object_or_404(Race, pk=race_id, user=user)
 		result = []
 		for lap in race.laps.values('num', 'time'):
 			result.append({u'num': lap['num'], u'time': lap['time']})
@@ -128,8 +163,11 @@ class TracksRacedAJAXView(JSONResponseMixin, DetailView):
 	json_dumps_kwargs = {u"indent": 2}
 
 	def get(self, request, *args, **kwargs):
+		username = kwargs['username']
 		machine_id = kwargs['machine_id']
-		machine = Machine.objects.get(pk=machine_id)
+		
+		user = get_object_or_404(get_user_model(), username=username)
+		machine = get_object_or_404(Machine, pk=machine_id, user=user)
 		result = []
 		for track in Track.objects.all().order_by('name'):
 			num_races = Race.objects.filter(track=track, machine_config__machine=machine).count()
@@ -145,17 +183,16 @@ class TracksRacedAJAXView(JSONResponseMixin, DetailView):
 
 		return self.render_json_response(result)
 
-# TODO: allow more than one racer! synonymous with user?
-def current_racers_bike(name):
-	return Machine.objects.get(name=name)
-
 @login_required
-def create_race(request):
+def create_race(request, username):
+	user = get_object_or_404(get_user_model(), username=username)
+	if not(user.username == request.user.username):
+		raise PermissionDenied
 	if request.method == 'POST':
-		form = forms.EditRaceForm(request.POST)
+		form = forms.EditRaceForm(request.POST, user=user)
 		if form.has_changed():
 			if form.is_valid():
-				machine = current_racers_bike(form.cleaned_data['machine_name'])
+				machine = Machine.objects.get(name=form.cleaned_data['machine_name'], user=user)
 				config = machine.empty_configuration()
 
 				race = Race()
@@ -164,20 +201,27 @@ def create_race(request):
 				race.track = Track.objects.get(name=form.cleaned_data['track_name'])
 				race.num_laps = form.cleaned_data['num_laps']
 				race.machine_config = config
+				race.user = user
 				race.save()
-				return HttpResponseRedirect("/laps/races/%d/edit/laps" % race.id)
+				return HttpResponseRedirect(reverse('laps:edit_race_laps', args=(username, race.id)))
 	else:
 		# TODO: initial values (date=today, )
 		#initial_form_values = race.__dict__
 		#form = forms.EditRaceForm(initial_form_values)
-		form = forms.EditRaceForm()
-	return render(request, 'laps/new_race.html', { 'form':form })
+		form = forms.EditRaceForm(user=user)
+	return render(request, 'laps/new_race.html', { 'form':form, 'racer': user.username })
 
 @login_required
-def edit_race(request, race_id):
+def edit_race(request, username, race_id):
+	user = get_object_or_404(get_user_model(), username=username)
+	if not(user.username == request.user.username):
+		raise PermissionDenied
 	race = get_object_or_404(Race, pk=race_id)
+	if not(race.user == user):
+		raise PermissionDenied
+
 	if request.method == 'POST':
-		form = forms.EditRaceForm(request.POST)
+		form = forms.EditRaceForm(request.POST, user=user)
 		if form.has_changed():
 			if form.is_valid():
 				race.name = form.cleaned_data['name']
@@ -187,29 +231,31 @@ def edit_race(request, race_id):
 				race.organization = form.cleaned_data['organization']
 				if not(race.machine_config.machine.name == form.cleaned_data['machine_name']):
 					# The machine was changed
-					machine = current_racers_bike(form.cleaned_data['machine_name'])
+					machine = Machine.objects.get(name=form.cleaned_data['machine_name'], user=user)
 					race.machine_config = machine.empty_configuration()
 				race.save()
-				return HttpResponseRedirect("/laps/races/%d/edit/laps" % race.id)
+				return HttpResponseRedirect(reverse('laps:edit_race_laps', args=(username, race.id)))
 	else:
 		initial_form_values = race.__dict__
 		initial_form_values['machine_name'] = race.machine_config.machine.name
 		initial_form_values['track_name'] = race.track.name
 		initial_form_values['num_laps'] = race.num_laps
-		form = forms.EditRaceForm(initial_form_values)
-	return render(request, 'laps/edit_race.html', { 'form':form, 'race':race })
-
-# TODO: allow more than one racer! synonymous with user?
-def current_racer():
-	return Racer.objects.all()[0]
+		form = forms.EditRaceForm(initial_form_values, user=user)
+	return render(request, 'laps/edit_race.html', { 'form':form, 'race':race, 'racer': username })
 
 @login_required
-def edit_race_laps(request, race_id):
+def edit_race_laps(request, username, race_id):
+	user = get_object_or_404(get_user_model(), username=username)
+	if not(user.username == request.user.username):
+		raise PermissionDenied
 	race = get_object_or_404(Race, pk=race_id)
+	if not(race.user == user):
+		raise PermissionDenied
+
 	laps = Lap.objects.filter(race__id=race_id)
 	if race.num_laps == 0:
 		# No laps to enter/edit, so just return to the race page
-		return HttpResponseRedirect("/laps/races/%d" % race.id)
+		return HttpResponseRedirect(reverse('laps:race', args=(username, race.id)))
 
 	if request.method == 'POST':
 		# TODO: include notification to say update was successful
@@ -231,18 +277,18 @@ def edit_race_laps(request, race_id):
 						lap.time = lap_time_s
 					except Lap.DoesNotExist:
 						# Create a new lap:
-						lap, created = Lap.objects.get_or_create(race=race, num=lap_num, time=lap_time_s, racer=current_racer())
+						lap, created = Lap.objects.get_or_create(race=race, num=lap_num, time=lap_time_s)
 					except Lap.MultipleObjectsReturned:
 						# TODO: had an issue with race that had same lap number twice...
 						# TODO: maybe ensure uniqueness here?
 						Lap.objects.filter(race=race, num=lap_num).delete()
-						lap, created = Lap.objects.get_or_create(race=race, num=lap_num, time=lap_time_s, racer=current_racer())
+						lap, created = Lap.objects.get_or_create(race=race, num=lap_num, time=lap_time_s)
 					lap.save()
 		else:
 			raise Exception('Invalid form submission')
-		return HttpResponseRedirect("/laps/races/%d" % race.id)
+		return HttpResponseRedirect(reverse('laps:race', args=(username, race.id)))
 	else:
 		form = forms.EditLapsForm(num_laps=race.num_laps, laps=laps)
-	return render(request, 'laps/edit_laps.html', { 'form':form, 'race':race })
+	return render(request, 'laps/edit_laps.html', { 'form':form, 'race':race, 'racer':user.username })
 
 

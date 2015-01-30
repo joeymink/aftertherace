@@ -8,7 +8,7 @@
 	<dt>Machines run here</dt>
 	<dd>
 		{% for machine in track.machines %}
-			<a href="{% url 'laps:machine' machine.id %}">{{ machine.name }}</a>
+			<a href="{% url 'laps:machine' racer machine.id %}">{{ machine.name }}</a>
 		{% endfor %}
 	</dd>
 	<dt>Total races</dt>

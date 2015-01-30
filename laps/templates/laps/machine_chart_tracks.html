@@ -8,7 +8,7 @@
 	}
 
 	$(function () {
-		$.getJSON('/laps/machines/{{ machine.id }}/chart_tracks', function( data ) {
+		$.getJSON('{% url "laps:chart_tracks" racer machine.id %}', function( data ) {
 			var num_races = [];
 			for (i = 0; i < data.length; i++)
 				num_races.push(data[i].num_races);
@@ -31,7 +31,8 @@
 		        tooltip: {
 	        		useHTML: true,
 		            formatter: function () {
-		                return '<a href="/laps/tracks/' + this.x.track.id + '">'
+		            	// TODO: how to incorporate django named urls here?
+		                return '<a href="/laps/{{ racer }}/tracks/' + this.x.track.id + '">'
 		                	+ this.x.track.name + '</a>: <b>' + this.y + '</b>';
 		            }
 		        },
