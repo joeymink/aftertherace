@@ -32,7 +32,7 @@
 	        		useHTML: true,
 		            formatter: function () {
 		            	// TODO: how to incorporate django named urls here?
-		                return '<a href="/laps/{{ racer }}/tracks/' + this.x.track.id + '">'
+		                return '<a href="{% url 'laps:tracks' racer %}' + this.x.track.id + '">'
 		                	+ this.x.track.name + '</a>: <b>' + this.y + '</b>';
 		            }
 		        },

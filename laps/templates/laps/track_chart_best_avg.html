@@ -64,7 +64,7 @@
             		var milli = parseInt((this.y % 1) * 1000, 10);
             		var laptime = min.toString() + ":" + pad(sec.toString(), 2) + ":" + pad(milli.toString(), 3);
             		// TODO: use Django URLs somehow below?
-            		return laptime + " (<a href=\"/laps/{{ racer }}/races/" + this.x.id + "\">" + this.x.name + "</a>)";
+            		return laptime + " (<a href=\"{% url 'laps:races' racer %}" + this.x.id + "\">" + this.x.name + "</a>)";
 	        	}
 	        }
 	    });
