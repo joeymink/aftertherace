@@ -18,9 +18,30 @@ import datetime, forms, util
 def logout(request):
 	return auth_views.logout(request, template_name='laps/logout.html')
 
+class AugmentedUser:
+	def __init__(self, user):
+		self.user = user
+
+	def races(self):
+		return Race.objects.filter(user=self.user).order_by('date_time')
+
+	def first_race(self):
+		return Lap.objects.filter(race__user=self.user).order_by('race__date_time')[0].race
+
+	def last_race(self):
+		return Lap.objects.filter(race__user=self.user).order_by('-race__date_time')[0].race
+
+	def num_laps(self):
+		return Lap.objects.filter(race__user=self.user).count()
+
+	def tracks(self):
+		return Track.objects.filter(races__user=self.user).order_by('name').distinct()
+
 def racer(request, username):
 	user = get_user_model().objects.get(username=username)
-	return render(request, 'laps/racer.html', {'racer':user.username})
+	return render(request, 'laps/racer.html', {
+		'racer':user.username,
+		'auguser':AugmentedUser(user)})
 
 @login_required
 def profile(request):

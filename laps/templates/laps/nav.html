@@ -15,15 +15,16 @@
 
     <!-- Collect the nav links, forms, and other content for toggling -->
     <div class="collapse navbar-collapse" id="atrtools-navbar">
-      {% if racer %}
-        <p class="navbar-text">
-          <span class="text-warning">
-            <span class="glyphicon glyphicon-user" aria-hidden="true"></span>
-            {{ racer }}
-          </span></p>
-      {% endif %}
       <ul class="nav navbar-nav">
         {% if racer %}
+          <li>
+            <a href="{% url 'laps:racer' racer %}">
+              <span class="text-warning">
+                <span class="glyphicon glyphicon-user" aria-hidden="true"></span>
+                {{ racer }}
+              </span>
+            </a>
+          </li>
           <li><a href="{% url 'laps:machines' racer %}">Machines</a></li>
           <li><a href="{% url 'laps:tracks' racer %}">Tracks</a></li>
           <li><a href="{% url 'laps:races' racer %}">Races</a></li>
