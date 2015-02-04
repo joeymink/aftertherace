@@ -2,4 +2,19 @@
 
 <h1>{{ racer }}</h1>
 
+<dl class="dl-horizontal">
+	<dt>Lap data from</dt>
+	<dd>{{ auguser.first_race.date_time.date }} - {{ auguser.last_race.date_time.date }}</dd>
+	{% for org, events in machine.events_by_organization.items %}
+		<dt>Events run with {{ org }}</dt>
+		<dd>{{ events |join:", " }}</dd>
+	{% endfor %}
+	<dt>Tracks raced</dt>
+	<dd>{{ auguser.tracks.count }}<dd>
+	<dt>Races run</dt>
+	<dd>{{ auguser.races.count }}</dd>
+	<dt>Total laps</dt>
+	<dd>{{ auguser.num_laps }}</dd>
+</dl>
+
 {% include "laps/footer.html" %}
