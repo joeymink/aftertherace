@@ -9,5 +9,6 @@ urlpatterns = patterns('',
     url(r'^/?$', laps.views.index, name='index'),
     url(r'^accounts/login/$', auth_views.login, name='login'),
     url(r'^logout/$', laps.views.logout, name='atr_logout'),
+	url(r'^registration/', include('registration.backends.default.urls')),
 
 )

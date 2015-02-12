@@ -36,7 +36,9 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'laps'
+    'laps',
+    'django.contrib.sites',
+    'registration',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -84,3 +86,13 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 LOGIN_REDIRECT_URL = '/racers/profile'
+
+# registration
+ACCOUNT_ACTIVATION_DAYS = 30
+SITE_ID = 1
+
+try:
+    from local_settings import *
+except ImportError:
+    pass
+
