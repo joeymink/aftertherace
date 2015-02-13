@@ -40,6 +40,7 @@ INSTALLED_APPS = (
     'django.contrib.sites',
     'registration',
     'widget_tweaks'
+    'ganalytics',
 )
 
 MIDDLEWARE_CLASSES = (
