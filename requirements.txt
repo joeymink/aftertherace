@@ -8,3 +8,4 @@ psycopg2==2.5.4
 six==1.8.0
 static3==0.5.1
 wsgiref==0.1.2
+django-registration-redux==1.1

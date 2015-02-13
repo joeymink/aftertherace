@@ -4,7 +4,10 @@
 
 <dl class="dl-horizontal">
 	<dt>Lap data from</dt>
-	<dd>{{ auguser.first_race.date_time.date }} - {{ auguser.last_race.date_time.date }}</dd>
+	{% if auguser.first_race %}
+		<dd>{{ auguser.first_race.date_time.date }} - {{ auguser.last_race.date_time.date }}</dd>
+	{% endif %}
+		<dd>no races yet</dd>
 	{% for org, events in machine.events_by_organization.items %}
 		<dt>Events run with {{ org }}</dt>
 		<dd>{{ events |join:", " }}</dd>
