@@ -26,7 +26,10 @@ class AugmentedUser:
 		return Race.objects.filter(user=self.user).order_by('date_time')
 
 	def first_race(self):
-		return Lap.objects.filter(race__user=self.user).order_by('race__date_time')[0].race
+		try:
+			return Lap.objects.filter(race__user=self.user).order_by('race__date_time')[0].race
+		except IndexError:
+			return None
 
 	def last_race(self):
 		return Lap.objects.filter(race__user=self.user).order_by('-race__date_time')[0].race
