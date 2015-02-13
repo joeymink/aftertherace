@@ -6,8 +6,9 @@
 	<dt>Lap data from</dt>
 	{% if auguser.first_race %}
 		<dd>{{ auguser.first_race.date_time.date }} - {{ auguser.last_race.date_time.date }}</dd>
-	{% endif %}
+	{% else %}
 		<dd>no races yet</dd>
+	{% endif %}
 	{% for org, events in machine.events_by_organization.items %}
 		<dt>Events run with {{ org }}</dt>
 		<dd>{{ events |join:", " }}</dd>
