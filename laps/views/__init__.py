@@ -12,7 +12,9 @@ from django.contrib.auth import get_user_model
 from django.core.exceptions import PermissionDenied
 from django.core.urlresolvers import reverse
 
-import datetime, forms, util
+from laps import forms, util
+
+import datetime
 
 @login_required
 def logout(request):
@@ -108,24 +110,7 @@ def add_config_attr_to_race(request, username, race_id):
 				attr.save()
 	return HttpResponseRedirect(reverse('laps:race', args=(username, race.id)))
 
-def machine(request, username, machine_id):
-	user = get_object_or_404(get_user_model(), username=username)
-	machine = get_object_or_404(Machine, pk=machine_id, user=user)
-	races = RacesByYear()
-	races.get_races(Q(machine_config__machine=machine))
-	return render(request, 'laps/machine.html', {
-		'racer' : user.username,
-		'machine': machine,
-		'races':races.races,
-		'years':races.years,
-		'dates':races.dates})
 
-def machines(request, username):
-	user = get_object_or_404(get_user_model(), username=username)
-	machines = Machine.objects.filter(user=user)
-	return render(request, 'laps/machines.html', {
-		'racer' : user.username,
-		'machines': machines})
 
 def tracks(request, username):
 	user = get_object_or_404(get_user_model(), username=username)

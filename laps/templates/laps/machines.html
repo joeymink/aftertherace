@@ -1,6 +1,11 @@
 {% include "laps/header.html" %}
 
-<h1>Machines</h1>
+<h1>
+	Machines
+	{% ifequal user.username racer %}
+		<small><a href="{% url 'laps:create_machine' racer %}">[ Add ]</a></small>
+	{% endifequal %}
+</h1>
 
 {% if machines %}
 	<ul class="list-group">

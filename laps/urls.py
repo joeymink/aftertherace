@@ -1,6 +1,7 @@
 from django.conf.urls import patterns, url
 
 from laps import views
+from laps.views import machines
 
 urlpatterns = patterns('',
     url('profile', views.profile, name='profile'),
@@ -14,8 +15,9 @@ urlpatterns = patterns('',
     url(r'^(?P<username>[a-z0-9_]+)/races/(?P<race_id>\d+)/edit/add_config_attr/?$', views.add_config_attr_to_race, name='add_config_attr_to_race'),
     url(r'^(?P<username>[a-z0-9_]+)/races/(?P<race_id>\d+)/chart_laps/?$', views.LapsAJAXView.as_view(), name='chart_laps'),
     
-    url(r'^(?P<username>[a-z0-9_]+)/machines/?$', views.machines, name='machines'),
-    url(r'^(?P<username>[a-z0-9_]+)/machines/(?P<machine_id>\d+)/?$', views.machine, name='machine'),
+    url(r'^(?P<username>[a-z0-9_]+)/machines/?$', machines.machines, name='machines'),
+    url(r'^(?P<username>[a-z0-9_]+)/machines/new/$', machines.create_machine, name='create_machine'),
+    url(r'^(?P<username>[a-z0-9_]+)/machines/(?P<machine_id>\d+)/?$', machines.machine, name='machine'),
     url(r'^(?P<username>[a-z0-9_]+)/machines/(?P<machine_id>\d+)/chart_tracks/?$', views.TracksRacedAJAXView.as_view(), name='chart_tracks'),
     
     url(r'^(?P<username>[a-z0-9_]+)/tracks/$', views.tracks, name='tracks'),

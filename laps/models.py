@@ -22,7 +22,10 @@ class Machine(models.Model):
 		return Race.objects.filter(machine_config__machine=self).order_by('date_time')
 
 	def first_race(self):
-		return Lap.objects.filter(race__machine_config__machine=self).order_by('race__date_time')[0].race
+		try:
+			return Lap.objects.filter(race__machine_config__machine=self).order_by('race__date_time')[0].race
+		except IndexError:
+			return None
 
 	def last_race(self):
 		return Lap.objects.filter(race__machine_config__machine=self).order_by('-race__date_time')[0].race

@@ -58,3 +58,9 @@ class EditLapsForm(forms.Form):
 class AddConfigurationAttributeToRaceForm(forms.Form):
 	key = forms.CharField(label='Key', max_length=100)
 	value = forms.CharField(label='Value', max_length=100)
+
+class EditMachineForm(forms.Form):
+	name = forms.CharField(label='Name', max_length=100)
+	make = forms.CharField(label='Make', max_length=100)
+	model = forms.CharField(label='Model', max_length=100)
+	year = forms.IntegerField(label='Year')
