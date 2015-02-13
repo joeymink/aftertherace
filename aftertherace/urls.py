@@ -1,6 +1,7 @@
 from django.conf.urls import patterns, include, url
 from django.contrib import admin
 import laps
+from laps.views import reg as laps_reg_views
 from django.contrib.auth import views as auth_views
 
 urlpatterns = patterns('',
@@ -9,6 +10,10 @@ urlpatterns = patterns('',
     url(r'^/?$', laps.views.index, name='index'),
     url(r'^accounts/login/$', auth_views.login, name='login'),
     url(r'^logout/$', laps.views.logout, name='atr_logout'),
+
+    # Registration URLs
+	url(r'^registration/register/$', laps_reg_views.RegistrationViewUniqueEmail.as_view(),
+		name='registration_register'),
 	url(r'^registration/', include('registration.backends.default.urls')),
 
     # Password Reset URLs:
