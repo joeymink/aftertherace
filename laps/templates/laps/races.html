@@ -1,6 +1,11 @@
 {% include "laps/header.html" %}
 
-<h1>Races</h1>
+<h1>
+	Races
+	{% ifequal user.username racer %}
+		<small><a href="{% url 'laps:create_race' racer %}">[ Add ]</a></small>
+	{% endifequal %}
+</h1>
 
 {% if races %}
 	{% include "laps/races_by_year.html" %}
