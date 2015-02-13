@@ -39,6 +39,7 @@ INSTALLED_APPS = (
     'laps',
     'django.contrib.sites',
     'registration',
+    'ganalytics',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -116,6 +117,9 @@ EMAIL_HOST= 'smtp.sendgrid.net'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_PASSWORD = os.environ['SENDGRID_PASSWORD']
+
+# ganalytics
+GANALYTICS_TRACKING_CODE = os.environ['GANALYTICS_TRACKING_CODE']
 
 # registration
 ACCOUNT_ACTIVATION_DAYS = 30
