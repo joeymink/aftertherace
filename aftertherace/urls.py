@@ -19,18 +19,23 @@ urlpatterns = patterns('',
     # Password Reset URLs:
     url(r'^accounts/password_reset/$', 
         'django.contrib.auth.views.password_reset', 
-        {'post_reset_redirect' : '/accounts/password_reset/mailed/'},
+        {
+            'template_name': 'registration/my_password_reset_form.html',
+            'post_reset_redirect' : '/accounts/password_reset/mailed/'},
         name="password_reset"),
 
     url(r'^accounts/password_reset/mailed/$',
-        'django.contrib.auth.views.password_reset_done'),
+        'django.contrib.auth.views.password_reset_done',
+        { 'template_name': 'registration/my_password_reset_done.html', }),
 
     url(r'^accounts/password_reset/(?P<uidb64>[0-9A-Za-z]{1,13})-(?P<token>[0-9A-Za-z]{1,13}-[0-9A-Za-z]{1,20})/$',
         'django.contrib.auth.views.password_reset_confirm',
-        {'post_reset_redirect' : '/accounts/password_reset/complete/'},
+        {'post_reset_redirect' : '/accounts/password_reset/complete/',
+            'template_name': 'registration/my_password_reset_confirm.html'},
         name='password_reset_confirm',),
 
     url(r'^accounts/password_reset/complete/$', 
-        'django.contrib.auth.views.password_reset_complete'),
+        'django.contrib.auth.views.password_reset_complete',
+        {'template_name': 'registration/my_password_reset_complete.html'}),
 
 )
