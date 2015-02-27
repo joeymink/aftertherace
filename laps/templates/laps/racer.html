@@ -1,5 +1,7 @@
 {% include "laps/header.html" %}
 
+{% load lap_extras %}
+
 <h1>{{ racer }}</h1>
 
 <dl class="dl-horizontal">
@@ -20,5 +22,28 @@
 	<dt>Total laps</dt>
 	<dd>{{ auguser.num_laps }}</dd>
 </dl>
-
+<div class="row">
+	<div class="panel panel-default">
+		<div class="panel-heading">
+			Fastest Laps
+		</div>
+		<table class="table">
+		{% for race in auguser.fastest_races %}
+			<tr>
+				<td>
+					<strong>
+							{{ race.track.name }}
+					</strong>
+				</td>
+				<td>
+					<a href="{% url 'laps:race' racer race.id %}">
+						{{ race.best_lap_time|format_lap_time }}
+					</a>
+					<span class="text-muted"> - {{ race.machine_config.machine.model }}</span>
+				</td>
+			</tr>
+		{% endfor %}
+		</table>
+	</div>
+</div>
 {% include "laps/footer.html" %}

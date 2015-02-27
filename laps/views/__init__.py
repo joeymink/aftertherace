@@ -42,6 +42,20 @@ class AugmentedUser:
 	def tracks(self):
 		return Track.objects.filter(races__user=self.user).order_by('name').distinct()
 
+	def fastest_races(self):
+		races = []
+		for track in self.tracks():
+			fastest_race = None
+			for race in Race.objects.filter(user=self.user, track=track):
+				if race.best_lap_time() is None:
+					continue
+				if fastest_race is None:
+					fastest_race = race
+				elif race.best_lap_time() < fastest_race.best_lap_time():
+					fastest_race = race
+			races.append(fastest_race)
+		return races
+
 def racer(request, username):
 	user = get_user_model().objects.get(username=username)
 	return render(request, 'laps/racer.html', {
