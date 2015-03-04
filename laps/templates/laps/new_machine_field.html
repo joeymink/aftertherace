@@ -1,0 +1,19 @@
+{% load widget_tweaks %}
+
+<div
+	{% if field.errors %}
+		class="form-group has-error"
+	{% else %}
+		class="form-group"
+	{% endif %}
+>
+	<label for="{{ field.id_for_label }}" class="col-sm-2 control-label">{{ field.label }}</label>
+	<div class="col-sm-6">
+		{% render_field field class+="form-control" %}
+	</div>
+	<div class="col-sm-4">
+		{% for err in field.errors %}
+			<p class="text-danger">{{ err }}</p>
+		{% endfor %}
+	</div>
+</div>
