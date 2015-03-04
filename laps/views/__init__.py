@@ -34,7 +34,10 @@ class AugmentedUser:
 			return None
 
 	def last_race(self):
-		return Lap.objects.filter(race__user=self.user).order_by('-race__date_time')[0].race
+		laps = Lap.objects.filter(race__user=self.user).order_by('-race__date_time')
+		if laps.count() > 0:
+			return laps[0].race
+		return None
 
 	def num_laps(self):
 		return Lap.objects.filter(race__user=self.user).count()

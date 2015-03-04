@@ -53,25 +53,27 @@
 		</div>
 	</div>
 	<div class="col-md-6">
-		{% with auguser.last_race as race %}
-		<p class="lead">
-			<span class="glyphicon glyphicon-flag" aria-hidden="true"></span> Last race
-		</p>
-		<blockquote>
-			<p>{{ race.date_time.date }},
-				<a href="{% url 'laps:race' racer race.id %}">
-					{{ race.name }}
-				</a>
+		{% if auguser.last_race %}
+			{% with auguser.last_race as race %}
+			<p class="lead">
+				<span class="glyphicon glyphicon-flag" aria-hidden="true"></span> Last race
 			</p>
-			<footer>
-				<span class="glyphicon glyphicon-road" aria-hidden="true"></span>
-				<a href="{% url 'laps:track' racer race.track.id %}">{{ race.track.name }}</a>
-				{% if race.organization %}
-					with {{ race.organization }}
-				{% endif %}
-			</footer>
-		</blockquote>
-		{% endwith %}
+			<blockquote>
+				<p>{{ race.date_time.date }},
+					<a href="{% url 'laps:race' racer race.id %}">
+						{{ race.name }}
+					</a>
+				</p>
+				<footer>
+					<span class="glyphicon glyphicon-road" aria-hidden="true"></span>
+					<a href="{% url 'laps:track' racer race.track.id %}">{{ race.track.name }}</a>
+					{% if race.organization %}
+						with {{ race.organization }}
+					{% endif %}
+				</footer>
+			</blockquote>
+			{% endwith %}
+		{% endif %}
 	</div>
 </div>
 {% include "laps/footer.html" %}
