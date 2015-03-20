@@ -59,7 +59,6 @@ class Machine(models.Model):
 			if not(unique_key in config_dict):
 				config_dict[unique_key] = ""
 				config_list.append(attrs)
-		print config_list
 		return config_list
 
 	def events_by_organization(self):
