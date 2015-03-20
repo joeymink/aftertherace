@@ -13,6 +13,7 @@ from django.core.exceptions import PermissionDenied
 from django.core.urlresolvers import reverse
 
 from laps import forms, util
+from laps.views.user_util import assert_user_logged_in
 
 import datetime
 
@@ -109,9 +110,7 @@ def race(request, username, race_id):
 
 @login_required
 def add_config_attr_to_race(request, username, race_id):
-	user = get_object_or_404(get_user_model(), username=username)
-	if not(user.username == request.user.username):
-		raise PermissionDenied
+	user = assert_user_logged_in(username, request)
 	race = get_object_or_404(Race, pk=race_id)
 	if not(race.user == user):
 		raise PermissionDenied
@@ -221,9 +220,7 @@ class TracksRacedAJAXView(JSONResponseMixin, DetailView):
 
 @login_required
 def create_race(request, username):
-	user = get_object_or_404(get_user_model(), username=username)
-	if not(user.username == request.user.username):
-		raise PermissionDenied
+	user = assert_user_logged_in(username, request)
 	if request.method == 'POST':
 		form = forms.EditRaceForm(request.POST, user=user)
 		if form.has_changed():
@@ -249,9 +246,7 @@ def create_race(request, username):
 
 @login_required
 def edit_race(request, username, race_id):
-	user = get_object_or_404(get_user_model(), username=username)
-	if not(user.username == request.user.username):
-		raise PermissionDenied
+	user = assert_user_logged_in(username, request)
 	race = get_object_or_404(Race, pk=race_id)
 	if not(race.user == user):
 		raise PermissionDenied
@@ -281,9 +276,7 @@ def edit_race(request, username, race_id):
 
 @login_required
 def edit_race_laps(request, username, race_id):
-	user = get_object_or_404(get_user_model(), username=username)
-	if not(user.username == request.user.username):
-		raise PermissionDenied
+	user = assert_user_logged_in(username, request)
 	race = get_object_or_404(Race, pk=race_id)
 	if not(race.user == user):
 		raise PermissionDenied

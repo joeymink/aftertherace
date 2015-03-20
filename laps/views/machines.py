@@ -30,9 +30,7 @@ def machines(request, username):
 
 @login_required
 def create_machine(request, username):
-	user = get_object_or_404(get_user_model(), username=username)
-	if not(user.username == request.user.username):
-		raise PermissionDenied
+	user = assert_user_logged_in(username, request)
 
 	if request.method == 'POST':
 		form = laps.forms.EditMachineForm(request.POST)
