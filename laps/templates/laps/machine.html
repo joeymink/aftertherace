@@ -2,7 +2,11 @@
 
 {% load lap_extras %}
 
-<h1>{{ machine.name }} <small>{{ machine.year }} {{ machine.make }} {{ machine.model }}</small></h1>
+<h1>
+	{{ machine.name }}
+	<small>{{ machine.year }} {{ machine.make }} {{ machine.model }}</small>
+	<small><a href="{% url 'laps:edit_machine' racer machine.id %}">[ Edit ]</a></small>
+</h1>
 <dl class="dl-horizontal">
 	<dt>Lap data from</dt>
 	{% if machine.first_race %}

@@ -6,6 +6,7 @@ from django.contrib.auth.decorators import login_required
 
 from laps.models import Machine
 from laps.views import RacesByYear
+from laps.views.user_util import assert_user_logged_in
 import laps.forms
 
 def machine(request, username, machine_id):
@@ -46,8 +47,27 @@ def create_machine(request, username):
 				machine.save()
 				return HttpResponseRedirect(reverse('laps:machines', args=(username,)))
 	else:
-		# TODO: initial values (date=today, )
-		#initial_form_values = race.__dict__
-		#form = forms.EditRaceForm(initial_form_values)
 		form = laps.forms.EditMachineForm()
 	return render(request, 'laps/new_machine.html', { 'form':form, 'racer': user.username })
+
+@login_required
+def edit_machine(request, username, machine_id):
+	user = assert_user_logged_in(username, request)
+	machine = get_object_or_404(Machine, pk=machine_id)
+	if not(machine.user == user):
+		raise PermissionDenied
+
+	if request.method == 'POST':
+		form = laps.forms.EditMachineForm(request.POST)
+		if form.has_changed():
+			if form.is_valid():
+				machine.name = form.cleaned_data['name']
+				machine.make = form.cleaned_data['make']
+				machine.model = form.cleaned_data['model']
+				machine.year = form.cleaned_data['year']
+				machine.save()
+				return HttpResponseRedirect(reverse('laps:machine', args=(username, machine.id)))
+	else:
+		initial_form_values = machine.__dict__
+		form = laps.forms.EditMachineForm(initial_form_values)
+	return render(request, 'laps/edit_machine.html', { 'form':form, 'machine':machine, 'racer': username })

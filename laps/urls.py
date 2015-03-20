@@ -18,6 +18,7 @@ urlpatterns = patterns('',
     url(r'^(?P<username>[a-z0-9_]+)/machines/?$', machines.machines, name='machines'),
     url(r'^(?P<username>[a-z0-9_]+)/machines/new/$', machines.create_machine, name='create_machine'),
     url(r'^(?P<username>[a-z0-9_]+)/machines/(?P<machine_id>\d+)/?$', machines.machine, name='machine'),
+    url(r'^(?P<username>[a-z0-9_]+)/machines/(?P<machine_id>\d+)/edit/?$', machines.edit_machine, name='edit_machine'),
     url(r'^(?P<username>[a-z0-9_]+)/machines/(?P<machine_id>\d+)/chart_tracks/?$', views.TracksRacedAJAXView.as_view(), name='chart_tracks'),
     
     url(r'^(?P<username>[a-z0-9_]+)/tracks/$', views.tracks, name='tracks'),
