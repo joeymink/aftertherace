@@ -1,7 +1,7 @@
 Thanks for showing interest in atr.tools!
 
 Please click the following link to complete your registration:
-http://localhost:8000{% url 'registration_activate' activation_key %}
+http://atr.tools{% url 'registration_activate' activation_key %}
 
 Cheers,
 atr.tools Team
