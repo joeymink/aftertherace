@@ -233,14 +233,12 @@ def create_race(request, username):
 				race.date_time = form.cleaned_data['date_time']
 				race.track = Track.objects.get(name=form.cleaned_data['track_name'])
 				race.num_laps = form.cleaned_data['num_laps']
+				race.organization = form.cleaned_data['organization']
 				race.machine_config = config
 				race.user = user
 				race.save()
 				return HttpResponseRedirect(reverse('laps:edit_race_laps', args=(username, race.id)))
 	else:
-		# TODO: initial values (date=today, )
-		#initial_form_values = race.__dict__
-		#form = forms.EditRaceForm(initial_form_values)
 		form = forms.EditRaceForm(user=user)
 	return render(request, 'laps/new_race.html', { 'form':form, 'racer': user.username })
 
