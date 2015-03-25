@@ -39,7 +39,7 @@ INSTALLED_APPS = (
     'laps',
     'django.contrib.sites',
     'registration',
-    'widget_tweaks'
+    'widget_tweaks',
     'ganalytics',
 )
 
