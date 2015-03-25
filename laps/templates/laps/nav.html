@@ -19,9 +19,8 @@
         {% if racer %}
           <li>
             <a href="{% url 'laps:racer' racer %}">
-              <span class="text-warning">
-                <span class="glyphicon glyphicon-user" aria-hidden="true"></span>
-                {{ racer }}
+              <span class="text-info">
+                  [ {{ racer }} ]
               </span>
             </a>
           </li>
@@ -32,6 +31,12 @@
       </ul>
       <ul class="nav navbar-nav navbar-right">
         {% if user.is_authenticated %}
+          <li>
+            <a href="{% url 'laps:racer' user.username %}">
+                <span class="glyphicon glyphicon-user" aria-hidden="true"></span>
+                {{ user.username }}
+            </a>
+          </li>
           <li><a href="{% url 'atr_logout' %}" class="navbar-link">[ logout ]</a></li>
         {% else %}
           <li><a href="{% url 'login' %}" class="navbar-link">[ login ]</a></li >
