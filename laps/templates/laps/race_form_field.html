@@ -1,0 +1,26 @@
+{% load widget_tweaks %}
+
+<div
+	{% if field.errors %}
+		class="form-group has-error"
+	{% else %}
+		class="form-group"
+	{% endif %}
+>
+	<label for="{{ field.id_for_label }}" class="col-sm-2 control-label">{{ field.label }}</label>
+	<div class="col-sm-4">
+		{% render_field field class+="form-control" %}
+	</div>
+	<div class="col-sm-3">
+		<span class="text-muted">
+			<small>
+			{% ifequal field.name 'organization' %}
+				<em>WERA</em>, <em>CCS</em>, etc.
+			{% endifequal %}
+			{% ifequal field.name 'date_time' %}
+				<em>2015-03-25</em> or <em>2015-03-25 13:00:00</em>
+			{% endifequal %}
+			</small>
+		</span>
+	</div>
+</div>

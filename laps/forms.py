@@ -4,11 +4,11 @@ from laps.models import Lap, Machine, Race, Racer, Track
 
 class EditRaceForm(forms.Form):
 	name = forms.CharField(label='Name', max_length=100)
-	organization = forms.CharField(label='Organization', max_length=100)
+	organization = forms.CharField(label='Organization', max_length=100, required=False)
 	date_time = forms.DateTimeField(label="Date")
 	machine_name = forms.ChoiceField(label='Machine')
 	track_name = forms.ChoiceField(label='Track')
-	num_laps = forms.IntegerField(label='# Laps')
+	num_laps = forms.IntegerField(label='# Laps', min_value=1)
 
 	def __init__(self, *args, **kwargs):
 		user = kwargs.pop('user')
@@ -38,7 +38,10 @@ class EditLapsForm(forms.Form):
 					if l.num == i:
 						lap = l
 						break
-			self.fields["lap%d" % i] = forms.CharField(label="lap%d" % i, required=False)
+			self.fields["lap%d" % i] = forms.RegexField(
+				label="Lap %d" % i,
+				regex='[0-9]+:[0-9]+:[0-9]+',
+				required=False)
 			if not(lap is None):
 				self.fields["lap%d" % i].initial = format_lap_time(lap.time)
 

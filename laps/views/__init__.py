@@ -311,9 +311,7 @@ def edit_race_laps(request, username, race_id):
 						Lap.objects.filter(race=race, num=lap_num).delete()
 						lap, created = Lap.objects.get_or_create(race=race, num=lap_num, time=lap_time_s)
 					lap.save()
-		else:
-			raise Exception('Invalid form submission')
-		return HttpResponseRedirect(reverse('laps:race', args=(username, race.id)))
+			return HttpResponseRedirect(reverse('laps:race', args=(username, race.id)))
 	else:
 		form = forms.EditLapsForm(num_laps=race.num_laps, laps=laps)
 	return render(request, 'laps/edit_laps.html', { 'form':form, 'race':race, 'racer':user.username })

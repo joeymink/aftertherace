@@ -5,13 +5,22 @@
 	{{ race.name }} <small>{{ race.date_time }}</small>
 </h1>
 
-<h2>Laps</h2>
-<form action="{% url 'laps:edit_race_laps' user.username race.id %}?num_laps={{ form.num_laps }}" method="post">
+<h2>Edit Laps</h2>
+<form class="form-horizontal" action="{% url 'laps:edit_race_laps' user.username race.id %}?num_laps={{ form.num_laps }}" method="post">
+	<div class="col-sm-offset-2 col-sm-10">
+		<p class="text-info">
+			Enter lap times like <em>2:45:043</em>.
+		</p>
+	</div>
 	{% csrf_token %}
-	<table class="table">
-	{{ form.as_table }}
-	</table>
-	<input type="submit" value="Submit" />
+	{% for field in form %}
+		{% include "laps/default_form_field.html" %}
+	{% endfor %}
+	<div class="form-group">
+		<div class="col-sm-offset-2 col-sm-10">
+			<button type="submit" class="btn btn-default">Save</button>
+		</div>
+	</div>
 </form>
 
 {% include "laps/footer.html" %}
