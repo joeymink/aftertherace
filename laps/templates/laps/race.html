@@ -4,7 +4,10 @@
 
 <h1>
 	<span class="glyphicon glyphicon-flag" aria-hidden="true"></span>
-	{{ race.name }} with {{ race.organization }}
+	{{ race.name }}
+	{% if race.organization %}
+		with {{ race.organization }}
+	{% endif %}
 	{% ifequal user.username racer %}
 		<small><a href="{% url 'laps:edit_race' racer race.id %}">[ Edit ]</a></small>
 	{% endifequal %}
