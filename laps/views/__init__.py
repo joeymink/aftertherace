@@ -236,7 +236,13 @@ def create_race(request, username):
 				race.organization = form.cleaned_data['organization']
 				race.machine_config = config
 				race.user = user
-				race.save()
+				# If user hits back & returns to new race form,
+				# help them out by not creating a race twice or
+				# failing on uniqueness constraint:
+				race, created = Race.objects.get_or_create(
+					name=race.name, date_time=race.date_time, track=race.track,
+					num_laps=race.num_laps, organization=race.organization,
+					machine_config=race.machine_config, user=race.user)
 				return HttpResponseRedirect(reverse('laps:edit_race_laps', args=(username, race.id)))
 	else:
 		form = forms.EditRaceForm(user=user)
