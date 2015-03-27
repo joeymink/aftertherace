@@ -167,13 +167,14 @@ class LapTrendAJAXView(JSONResponseMixin, DetailView):
 			u'race': [],
 		}
 		for race in races:
-			result['best'].append(race.best_lap_time())
-			result['avg'].append(race.average_lap_time())
-			result['race'].append({
-				u'date': race.date_time,
-				u'name': race.name,
-				u'id': race.id
-				})
+			if race.laps.count() > 0:
+				result['best'].append(race.best_lap_time())
+				result['avg'].append(race.average_lap_time())
+				result['race'].append({
+					u'date': race.date_time,
+					u'name': race.name,
+					u'id': race.id
+					})
 
 		return self.render_json_response(result)
 
