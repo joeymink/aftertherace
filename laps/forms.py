@@ -17,12 +17,12 @@ class EditRaceForm(forms.Form):
 
 	def set_choices(self, user):
 		choices = []
-		for n in Machine.objects.filter(user=user).values('name'):
+		for n in Machine.objects.filter(user=user).values('name').order_by('name'):
 			choices.append( (n['name'], n['name']) )
 		self.fields['machine_name'].choices = choices
 		
 		choices = []
-		for t in Track.objects.all().values('name'):
+		for t in Track.objects.all().values('name').order_by('name'):
 			choices.append( (t['name'], t['name']) )
 		self.fields['track_name'].choices = choices
 
@@ -66,4 +66,4 @@ class EditMachineForm(forms.Form):
 	name = forms.CharField(label='Name', max_length=100)
 	make = forms.CharField(label='Make', max_length=100)
 	model = forms.CharField(label='Model', max_length=100)
-	year = forms.IntegerField(label='Year')
+	year = forms.IntegerField(label='Year', min_value=1)

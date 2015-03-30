@@ -151,6 +151,9 @@ class Race(models.Model):
 		numlaps = len(self.laps.values())
 		return lapsum / (Decimal(numlaps))
 
+	def get_laps(self):
+		return self.laps.values().order_by('num')
+
 
 def get_or_create_race(name=None, date=None, track=None, organization=None, machine_config=None, conditions=None):
 	q = Race.objects.filter(name=name, date_time=date, track=track, organization=organization)

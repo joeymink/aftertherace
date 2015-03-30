@@ -38,7 +38,7 @@
 
 <div class="panel panel-default">
 	<div class="panel-heading">Lap Plot</div>
-	{% if race.laps.all|length > 0 %}
+	{% if race.get_laps|length > 0 %}
 		{% include "laps/race_chart_laps.html" %}
 		<div id="container" style="width:100%; height:300px;"></div>
 	{% else %}
@@ -50,9 +50,9 @@
 	<div class="col-md-6">
 		<div class="panel panel-default">
 			<div class="panel-heading">Laps</div>
-			{% if race.laps.all|length > 0 %}
+			{% if race.get_laps|length > 0 %}
 				<table class="table table-striped table-hover">
-				{% for lap in race.laps.all %}
+				{% for lap in race.get_laps %}
 					{% if race.best_lap_time == lap.time %}
 						<tr class="success">
 					{% else %}

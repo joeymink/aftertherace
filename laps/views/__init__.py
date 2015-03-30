@@ -189,7 +189,7 @@ class LapsAJAXView(JSONResponseMixin, DetailView):
 		user = get_object_or_404(get_user_model(), username=username)
 		race = get_object_or_404(Race, pk=race_id, user=user)
 		result = []
-		for lap in race.laps.values('num', 'time'):
+		for lap in race.laps.values('num', 'time').order_by('num'):
 			result.append({u'num': lap['num'], u'time': lap['time']})
 
 		return self.render_json_response(result)
