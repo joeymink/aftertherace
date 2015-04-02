@@ -40,7 +40,7 @@ class EditLapsForm(forms.Form):
 						break
 			self.fields["lap%d" % i] = forms.RegexField(
 				label="Lap %d" % i,
-				regex='[0-9]+:[0-9]+:[0-9]+',
+				regex='[0-9]+:[0-9]{2}:[0-9]{3}',
 				required=False)
 			if not(lap is None):
 				self.fields["lap%d" % i].initial = format_lap_time(lap.time)
