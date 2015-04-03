@@ -9,33 +9,23 @@ def extract_from_motolaptimes(url):
 def parse_motolaptimes_content(content):
 	parsed_content = {}
 	
-	#Class: NJMP 072014<BR>
-	m = re.search(r'.*Class: (.*) ([0-9]+)', content)
-	if m is None:
-		raise Exception
-	parsed_content['track'] = m.group(1)
-	
 	#Date: 07/19/14
 	m = re.search(r'.*Date: (.*).BR.', content)
-	if m is None:
-		raise Exception
-	parsed_content['date'] = m.group(1)
+	if not(m is None):
+		parsed_content['date'] = m.group(1)
 	
 	#Time: 12:35PM<BR>
 	m = re.search(r'.*Time: (.*).BR.', content)
-	if m is None:
-		raise Exception
-	parsed_content['time'] = m.group(1)
+	if not(m is None):
+		parsed_content['time'] = m.group(1)
 	
 	#SAT RACE 2 GTL EX AM<BR><BR><b>LAPTIMES
 	m = re.search(r'^(.*).BR..BR..b.LAPTIMES', content, re.MULTILINE)
-	if m is None:
-		raise Exception
-	parsed_content['name'] = m.group(1)
+	if not(m is None):
+		parsed_content['name'] = m.group(1)
 
 	laps = []
 	soup = BeautifulSoup(content)
-	soup.find_all('tr')
 	tds = soup.find_all('td')
 	for i in range(len(tds)):
 		# 1st 3 tds are headers
