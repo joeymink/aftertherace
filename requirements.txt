@@ -3,3 +3,5 @@ django-braces==1.4.0
 django-registration-redux==1.1
 django-widget-tweaks
 django-ganalytics
+beautifulsoup4==4.3.2
+requests
