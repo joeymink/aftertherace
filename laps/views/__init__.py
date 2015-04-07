@@ -15,8 +15,6 @@ from django.core.urlresolvers import reverse
 from laps import forms, util
 from laps.views.user_util import assert_user_logged_in
 
-import datetime
-
 @login_required
 def logout(request):
 	return auth_views.logout(request, template_name='laps/logout.html')
