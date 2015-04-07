@@ -1,12 +1,24 @@
 import requests
 import re
 from bs4 import BeautifulSoup
+from laps.models import Lap, Race
+import datetime
+from laps import util
 
 def extract_from_motolaptimes(url):
+	'''
+		GETs the given motolaptimes url
+		and extracts its contents
+	'''
 	r = requests.get(url)
 	return parse_motolaptimes_content(r.text)
 
 def parse_motolaptimes_content(content):
+	'''
+		parses the content from a motolaptimes
+		race page
+	'''
+
 	parsed_content = {}
 	
 	#Date: 07/19/14
@@ -39,4 +51,23 @@ def parse_motolaptimes_content(content):
 	parsed_content['laps'] = laps
 	
 	return parsed_content
+
+def motolaptimes_as_model(parsed_content, user):
+	'''
+		converts parsed motolaptimes content to
+		model objects and persists them
+	'''
+	date_str = "%s %s" % (parsed_content['date'], parsed_content['time'])
+	print "date_str=%s" % date_str
+	date = datetime.datetime.strptime(date_str, '%m/%d/%y %H:%M%p')
+	r = Race(user=user, name=parsed_content['name'], date_time=date)
+	r.save()
+
+	for i in range(len(parsed_content['laps'])):
+		lapstr = parsed_content['laps'][i]
+		lapstr = lapstr.replace('.', ':')
+		laptime = util.interpret_time(lapstr)
+		lap, created = Lap.objects.get_or_create(race=r, num=i, time=laptime)
+
+	return r
 

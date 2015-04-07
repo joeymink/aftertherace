@@ -123,14 +123,18 @@ class Race(models.Model):
 	name = models.CharField(max_length=100)
 	machine_config = models.ForeignKey(MachineConfiguration, blank=True, null=True, related_name='races')
 	date_time = models.DateTimeField()
-	track = models.ForeignKey(Track, related_name="races")
+	track = models.ForeignKey(Track, related_name="races", null=True)
 	organization = models.CharField(max_length=100)
 	conditions = models.CharField(max_length=100)
 	num_laps = models.IntegerField(default=0)
 	user = models.ForeignKey(settings.AUTH_USER_MODEL)
 
 	def __unicode__(self):
-		return self.track.name
+		if not(self.track is None):
+			trackname = self.track.name
+		else:
+			trackname = None
+		return "Race at %s on %s with %s " % (trackname, self.date_time, self.organization)
 
 	class Meta:
 		unique_together = ('name', 'date_time', 'track', 'organization', 'user')
