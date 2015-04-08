@@ -67,3 +67,6 @@ class EditMachineForm(forms.Form):
 	make = forms.CharField(label='Make', max_length=100)
 	model = forms.CharField(label='Model', max_length=100)
 	year = forms.IntegerField(label='Year', min_value=1)
+
+class ImportMotolaptimesForm(forms.Form):
+	url = forms.URLField(label='Race Results URL', required=True)

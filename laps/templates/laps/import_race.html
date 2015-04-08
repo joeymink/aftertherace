@@ -1,0 +1,25 @@
+{% include "laps/header.html" %}
+
+<h1>Import Race</h1>
+<p class="text-muted">
+	We currently only support importing races from <a href="http://motolaptimes.com/">motolaptimes.com</a>. But hopefully there is more to come!
+</p>
+<h2>motolaptimes.com</h2>
+<p class="text-muted">
+	Head over to the wonderful <a href="http://motolaptimes.com/">motolaptimes.com</a> page,
+	and browse to find the race results you want to import. Then grab the URL for that page
+	and enter it below.
+</p>
+<form class="form-horizontal" action="{% url 'laps:import_race' user.username %}" method="post">
+	{% csrf_token %}
+	{% for field in form %}
+		{% include "laps/default_form_field.html" %}
+	{% endfor %}
+	<div class="form-group">
+		<div class="col-sm-offset-2 col-sm-10">
+			<button type="submit" class="btn btn-default">Import</button>
+		</div>
+	</div>
+</form>
+
+{% include "laps/footer.html" %}

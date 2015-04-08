@@ -19,12 +19,20 @@
 	<div class="col-md-4">
 		<h3>
 			<span class="glyphicon glyphicon-road" aria-hidden="true"></span>
-			<a href="{% url 'laps:track' racer race.track.id %}">{{ race.track.name }}</a>
+			{% if race.track %}
+				<a href="{% url 'laps:track' racer race.track.id %}">{{ race.track.name }}</a>
+			{% else %}
+				<span class="text-muted"><em>No track entered</em></span>
+			{% endif %}
 		</h3>
 	</div>
 	<div class="col-md-4">
 		<h3>
-			<a href="{% url 'laps:machine' racer race.machine_config.machine.id %}">{{ race.machine_config.machine.name }}</a>
+			{% if race.machine_config %}
+				<a href="{% url 'laps:machine' racer race.machine_config.machine.id %}">{{ race.machine_config.machine.name }}</a>
+			{% else %}
+				<span class="text-muted"><em>No machine entered</em></span>
+			{% endif %}
 		</h3>
 	</div>
 </div>

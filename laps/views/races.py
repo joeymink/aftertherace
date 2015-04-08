@@ -7,7 +7,7 @@ from django.core.urlresolvers import reverse
 from laps.models import ConfigurationAttribute, Lap, Machine, MachineConfiguration, Race, Track
 from laps.views import RacesByYear
 from laps.views.user_util import assert_user_logged_in
-from laps import forms, util
+from laps import forms, lapimport, util
 
 def races(request, username):
 	user = get_user_model().objects.get(username=username)
@@ -78,6 +78,21 @@ def create_race(request, username):
 	return render(request, 'laps/new_race.html', { 'form':form, 'racer': user.username })
 
 @login_required
+def import_race(request, username):
+	user = assert_user_logged_in(username, request)
+	if request.method == 'POST':
+		form = forms.ImportMotolaptimesForm(request.POST)
+		if form.has_changed():
+			if form.is_valid():
+				motolaptimes_url = form.cleaned_data['url']
+				parsed_content = lapimport.extract_from_motolaptimes(motolaptimes_url)
+				race = lapimport.motolaptimes_as_model(parsed_content, user)
+				return HttpResponseRedirect(reverse('laps:race', args=(user.username, race.id)))
+	else:
+		form = forms.ImportMotolaptimesForm()
+	return render(request, 'laps/import_race.html', { 'form':form, 'racer': user.username })
+
+@login_required
 def edit_race(request, username, race_id):
 	user = assert_user_logged_in(username, request)
 	race = get_object_or_404(Race, pk=race_id)
@@ -101,8 +116,10 @@ def edit_race(request, username, race_id):
 				return HttpResponseRedirect(reverse('laps:edit_race_laps', args=(username, race.id)))
 	else:
 		initial_form_values = race.__dict__
-		initial_form_values['machine_name'] = race.machine_config.machine.name
-		initial_form_values['track_name'] = race.track.name
+		if race.machine_config:
+			initial_form_values['machine_name'] = race.machine_config.machine.name
+		if race.track:
+			initial_form_values['track_name'] = race.track.name
 		initial_form_values['num_laps'] = race.num_laps
 		form = forms.EditRaceForm(initial_form_values, user=user)
 	return render(request, 'laps/edit_race.html', { 'form':form, 'race':race, 'racer': username })

@@ -4,6 +4,7 @@
 	Races
 	{% ifequal user.username racer %}
 		<small><a href="{% url 'laps:create_race' racer %}">[ Add ]</a></small>
+		<small><a href="{% url 'laps:import_race' racer %}">[ Import ]</a></small>
 	{% endifequal %}
 </h1>
 

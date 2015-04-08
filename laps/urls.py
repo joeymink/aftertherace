@@ -9,6 +9,7 @@ urlpatterns = patterns('',
 
     url(r'^(?P<username>[a-z0-9_]+)/races/$', races.races, name='races'),
     url(r'^(?P<username>[a-z0-9_]+)/races/new/$', races.create_race, name='create_race'),
+    url(r'^(?P<username>[a-z0-9_]+)/races/import/$', races.import_race, name='import_race'),
     url(r'^(?P<username>[a-z0-9_]+)/races/(?P<race_id>\d+)/?$', races.race, name='race'),
     url(r'^(?P<username>[a-z0-9_]+)/races/(?P<race_id>\d+)/edit/?$', races.edit_race, name='edit_race'),
     url(r'^(?P<username>[a-z0-9_]+)/races/(?P<race_id>\d+)/edit/laps/?$', races.edit_race_laps, name='edit_race_laps'),

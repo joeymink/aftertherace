@@ -25,7 +25,13 @@
 						</td>
 						<td>
 							<span class="glyphicon glyphicon-road" aria-hidden="true"></span>
-							<a href="{% url 'laps:track' racer race.track.id %}">{{ race.track.name }}</a>
+							{% if race.track %}
+								<a href="{% url 'laps:track' racer race.track.id %}">
+									{{ race.track.name }}
+								</a>
+							{% else %}
+								<span class="text-muted"><em>No track entered</em></span>
+							{% endif %}
 						</td>
 					{% endif %}
 				</tr>

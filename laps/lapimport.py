@@ -60,14 +60,15 @@ def motolaptimes_as_model(parsed_content, user):
 	date_str = "%s %s" % (parsed_content['date'], parsed_content['time'])
 	print "date_str=%s" % date_str
 	date = datetime.datetime.strptime(date_str, '%m/%d/%y %H:%M%p')
-	r = Race(user=user, name=parsed_content['name'], date_time=date)
+	num_laps = len(parsed_content['laps'])
+	r = Race(user=user, name=parsed_content['name'], date_time=date, num_laps=num_laps)
 	r.save()
 
-	for i in range(len(parsed_content['laps'])):
+	for i in range(num_laps):
 		lapstr = parsed_content['laps'][i]
 		lapstr = lapstr.replace('.', ':')
 		laptime = util.interpret_time(lapstr)
-		lap, created = Lap.objects.get_or_create(race=r, num=i, time=laptime)
+		lap, created = Lap.objects.get_or_create(race=r, num=i+1, time=laptime)
 
 	return r
 
