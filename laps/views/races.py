@@ -108,7 +108,7 @@ def edit_race(request, username, race_id):
 				race.track = Track.objects.get(name=form.cleaned_data['track_name'])
 				race.num_laps = form.cleaned_data['num_laps']
 				race.organization = form.cleaned_data['organization']
-				if not(race.machine_config.machine.name == form.cleaned_data['machine_name']):
+				if (race.machine_config is None) or not(race.machine_config.machine.name == form.cleaned_data['machine_name']):
 					# The machine was changed
 					machine = Machine.objects.get(name=form.cleaned_data['machine_name'], user=user)
 					race.machine_config = machine.empty_configuration()

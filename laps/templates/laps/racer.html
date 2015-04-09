@@ -65,8 +65,10 @@
 					</a>
 				</p>
 				<footer>
-					<span class="glyphicon glyphicon-road" aria-hidden="true"></span>
-					<a href="{% url 'laps:track' racer race.track.id %}">{{ race.track.name }}</a>
+					{% if race.track %}
+						<span class="glyphicon glyphicon-road" aria-hidden="true"></span>
+						<a href="{% url 'laps:track' racer race.track.id %}">{{ race.track.name }}</a>
+					{% endif %}
 					{% if race.organization %}
 						with {{ race.organization }}
 					{% endif %}
