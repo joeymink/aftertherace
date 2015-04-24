@@ -75,5 +75,38 @@ class RaceTest(TestCase):
 
 		self.assertTrue(models.Race.objects.get(id=race.id).laps.count() == 5)
 
+class TrackTest(TestCase):
 
+	def test_only_given_users_machines_returned(self):
+		t = models.Track(name="NJMP Thunderbolt")
+		t.save()
 
+		# User 1
+		u1,created = get_user_model().objects.get_or_create(username='user1', email='user1@joeymink.com')
+
+		m1 = Machine(name='User1 Bike', make='Kawi', model='EX250', year=2009, user=u1)
+		m1.save()
+		c1 = MachineConfiguration(name='My Config', machine=m1)
+		c1.save()
+
+		race1 = models.Race(name="Ultra Lightweight Thunderbike", track=t, machine_config=c1, date_time=datetime.now(), user=u1)
+		race1.save()
+
+		# User 2
+		u2,created = get_user_model().objects.get_or_create(username='user2', email='user2@joeymink.com')
+
+		m2 = Machine(name='User2 Bike', make='Kawi', model='EX250', year=2009, user=u2)
+		m2.save()
+		c2 = MachineConfiguration(name='My Config', machine=m2)
+		c2.save()
+
+		race2 = models.Race(name="Ultra Lightweight Thunderbike", track=t, machine_config=c2, date_time=datetime.now(), user=u2)
+		race2.save()
+
+		machines_for_u1 = t.machines(u1)
+		self.assertTrue(len(machines_for_u1) == 1)
+		self.assertTrue(machines_for_u1[0].name == m1.name)
+
+		machines_for_u2 = t.machines(u2)
+		self.assertTrue(len(machines_for_u2) == 1)
+		self.assertTrue(machines_for_u2[0].name == m2.name)

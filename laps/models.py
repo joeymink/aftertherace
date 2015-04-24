@@ -97,8 +97,8 @@ class Track(models.Model):
 	def __unicode__(self):
 		return self.name
 
-	def machines(self):
-		return Machine.objects.filter(configurations__races__track=self).distinct()
+	def machines(self, user):
+		return Machine.objects.filter(configurations__races__track=self, user=user).distinct()
 
 	def races(self):
 		return Race.objects.filter(track=self)
