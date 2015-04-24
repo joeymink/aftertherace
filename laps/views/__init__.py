@@ -102,7 +102,8 @@ def track(request, username, track_id):
 		'track': track,
 		'races':races.races,
 		'years':races.years,
-		'dates':races.dates})
+		'dates':races.dates,
+		'machines': track.machines(user) })
 
 def index(request):
 	return render(request, 'laps/index.html', {})
