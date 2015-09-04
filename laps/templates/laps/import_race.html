@@ -2,9 +2,11 @@
 
 <h1>Import Race</h1>
 <p class="text-muted">
-	We currently only support importing races from <a href="http://motolaptimes.com/">motolaptimes.com</a>. But hopefully there is more to come!
+	We support a few ways to import races, but we'd love to add more! If none of these work for you,
+	please let us know and give us a sample data file you'd like to import. Don't forget to edit these
+	races after import since not all import solutions include all data (race name, race date/time, track, etc).
 </p>
-<h2>motolaptimes.com</h2>
+<h2>Motolaptimes (CCS, ASRA)</h2>
 <p class="text-muted">
 	Head over to the wonderful <a href="http://motolaptimes.com/">motolaptimes.com</a> page,
 	and browse to find the race results you want to import. Then grab the URL for that page
@@ -22,6 +24,11 @@
 	</div>
 </form>
 
+<h2>Plain old text</h2>
+<p class="text-muted">
+	A catch-all solution to importing times: one lap per line. Laps should be in the format minute:second.millisecond -
+	like 1:42.678
+</p>
 <form class="form-horizontal" action="{% url 'laps:import_race_from_lap_text' user.username %}" method="post">
 	{% csrf_token %}
 	{% for field in text_form %}
