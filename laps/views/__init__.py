@@ -96,7 +96,7 @@ def track(request, username, track_id):
 	user = get_object_or_404(get_user_model(), username=username)
 	track = get_object_or_404(Track, pk=track_id)
 	races = RacesByYear()
-	races.get_races(Q(track__id=track_id))
+	races.get_races(Q(track__id=track_id, user=user))
 	return render(request, 'laps/track.html', {
 		'racer': user.username,
 		'track': track,
