@@ -1,4 +1,4 @@
-from django.shortcuts import get_object_or_404, render, HttpResponseRedirect
+from django.shortcuts import get_object_or_404, render, HttpResponse, HttpResponseRedirect
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import get_user_model
 from django.db.models import Q
@@ -90,7 +90,22 @@ def import_race(request, username):
 				return HttpResponseRedirect(reverse('laps:race', args=(user.username, race.id)))
 	else:
 		form = forms.ImportMotolaptimesForm()
-	return render(request, 'laps/import_race.html', { 'form':form, 'racer': user.username })
+		text_form = forms.ImportLapsFromTextForm()
+	return render(request, 'laps/import_race.html', { 'form':form, 'text_form': text_form, 'racer': user.username })
+
+@login_required
+def import_race_from_lap_text(request, username):
+	user = assert_user_logged_in(username, request)
+	if request.method == 'POST':
+		form = forms.ImportLapsFromTextForm(request.POST)
+		if form.has_changed():
+			if form.is_valid():
+				laptext = form.cleaned_data['url']
+				parsed_content = lapimport.extract_from_text(laptext)
+				race = lapimport.motolaptimes_as_model(parsed_content, user)
+				return HttpResponseRedirect(reverse('laps:race', args=(user.username, race.id)))
+	else:
+		return HttpResponse(status=405)
 
 @login_required
 def edit_race(request, username, race_id):

@@ -70,3 +70,6 @@ class EditMachineForm(forms.Form):
 
 class ImportMotolaptimesForm(forms.Form):
 	url = forms.URLField(label='Race Results URL', required=True)
+
+class ImportLapsFromTextForm(forms.Form):
+	url = forms.CharField(label='Laps as minute:second.ms, one per line', required=True, widget=forms.Textarea)

@@ -57,6 +57,13 @@ def motolaptimes_as_model(parsed_content, user):
 		converts parsed motolaptimes content to
 		model objects and persists them
 	'''
+	if not('date' in parsed_content):
+		parsed_content['date'] = '9/4/15'
+	if not('time' in parsed_content):
+		parsed_content['time'] = '12:00PM'
+	if not('name' in parsed_content):
+		parsed_content['name'] = 'Unnamed Race'
+
 	date_str = "%s %s" % (parsed_content['date'], parsed_content['time'])
 	print "date_str=%s" % date_str
 	date = datetime.datetime.strptime(date_str, '%m/%d/%y %H:%M%p')
@@ -72,3 +79,10 @@ def motolaptimes_as_model(parsed_content, user):
 
 	return r
 
+def extract_from_text(laptext):
+	'''
+		parses race data from text (only laps, currently)
+	'''
+	parsed_content = {}
+	parsed_content['laps'] = laptext.split()
+	return parsed_content
