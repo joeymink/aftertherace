@@ -47,7 +47,11 @@
 <div class="panel panel-default">
 	<div class="panel-heading">Lap Plot</div>
 	{% if race.get_laps|length > 0 %}
-		{% include "laps/race_chart_laps.html" %}
+		{% if race.is_team %}
+			{% include "laps/race_team_chart_laps.html" %}
+		{% else %}
+			{% include "laps/race_chart_laps.html" %}
+		{% endif %}
 		<div id="container" style="width:100%; height:300px;"></div>
 	{% else %}
 		<p class="text-muted text-center">No laps entered</p>

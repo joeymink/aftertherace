@@ -1,4 +1,4 @@
-from laps.models import ConfigurationAttribute, Lap, Machine, MachineConfiguration, Race, Track
+from laps.models import ConfigurationAttribute, Lap, Machine, MachineConfiguration, Race, Track, RiderChange
 from django.shortcuts import get_object_or_404, render, HttpResponseRedirect
 from django.db.models import Q
 from django.views.generic import DetailView
@@ -149,6 +149,44 @@ class LapsAJAXView(JSONResponseMixin, DetailView):
 		result = []
 		for lap in race.laps.values('num', 'time').order_by('num'):
 			result.append({u'num': lap['num'], u'time': lap['time']})
+
+		return self.render_json_response(result)
+
+class LapsTeamAJAXView(JSONResponseMixin, DetailView):
+	model = Race
+	json_dumps_kwargs = {u"indent": 2}
+
+	def get(self, request, *args, **kwargs):
+		username = kwargs['username']
+		race_id = kwargs['race_id']
+
+		user = get_object_or_404(get_user_model(), username=username)
+		race = get_object_or_404(Race, pk=race_id, user=user)
+		
+		result = { 'laps':[], 'riders':[] }
+		for i in xrange(1, race.get_laps().count() + 1):
+			result['laps'].append(i)
+		
+		riders = {}
+		changes = RiderChange.objects.filter(race=race)
+		for change in changes:
+			rider_name = change.get_rider_name()
+			if not(rider_name in riders):
+				riders[rider_name] = []
+
+		current_rider = user.username
+		for lap in race.laps.values('num', 'time').order_by('num'):
+			change = RiderChange.objects.filter(race=race, num=lap['num'])
+			if change.count():
+				current_rider = change[0].get_rider_name()
+			for rider, laps in riders.iteritems():
+				if rider == current_rider:
+					riders[rider].append(lap['time'])
+				else:
+					riders[rider].append(0)
+
+		for rider, laps in riders.iteritems():
+			result['riders'].append({'rider': rider, 'laps':laps})
 
 		return self.render_json_response(result)
 

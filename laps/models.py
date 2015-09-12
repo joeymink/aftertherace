@@ -185,6 +185,12 @@ class RiderChange(models.Model):
 	rider_name = models.CharField(max_length=100, null=True)
 	num = models.IntegerField(default=1)
 
+	def get_rider_name(self):
+		if self.user:
+			return self.user.username
+		else:
+			return self.rider_name
+
 class Lap(models.Model):
 	race = models.ForeignKey(Race, related_name='laps')
 	num = models.IntegerField()

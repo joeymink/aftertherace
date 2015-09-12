@@ -1,0 +1,65 @@
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
+<script src="http://code.highcharts.com/highcharts.js"></script>
+<script type="text/javascript">
+	// TODO: put this function in one place and re-use
+	function pad (str, max) {
+	  str = str.toString();
+	  return str.length < max ? pad("0" + str, max) : str;
+	}
+
+	$(function () {
+		$.getJSON('{% url "laps:chart_team_laps" racer race.id %}', function( data ) {
+		var allSeries = [];
+		for (i = 0; i < data.riders.length; i++){
+			var series = { name: data.riders[i].rider, data: [] };
+			for (var j = 0; j < data.riders[i].laps.length; j++) {
+				var floatVal = parseFloat(data.riders[i].laps[j]);
+				if (floatVal === 0.0) series.data.push(null);
+				else series.data.push(parseFloat(data.riders[i].laps[j]));
+			}
+			allSeries.push(series);
+		}
+	    $('#container').highcharts({
+	        chart: {
+	            type: 'line'
+	        },
+	        title: {
+	            text: 'Lap Times'
+	        },
+	        xAxis: {
+	        	labels: {
+	        		formatter: function() {
+	        			return this.value;
+	        		}
+	        	},
+	            categories: data.laps
+	        },
+	        yAxis: {
+	            title: {
+	                text: 'Lap Time'
+	            },
+	            labels: {
+	            	formatter: function() {
+	            		var min = parseInt(this.value / 60, 10);
+	            		var sec = parseInt(this.value % 60, 10);
+	            		var milli = parseInt((this.value % 1) * 1000, 10);
+	            		return min.toString() + ":" + pad(sec.toString(), 2) + ":" + milli.toString();
+	            	}
+	            }
+	        },
+	        series: allSeries,
+	        tooltip: {
+	        	useHTML: true,
+	        	formatter: function() {
+	        		// TODO: share min:sec:milli conversion code with yAxis.labels.formatter
+					var min = parseInt(this.y / 60, 10);
+            		var sec = parseInt(this.y % 60, 10);
+            		var milli = parseInt((this.y % 1) * 1000, 10);
+            		var laptime = min.toString() + ":" + pad(sec.toString(), 2) + ":" + pad(milli.toString(), 3);
+            		return "<b>Lap " + this.x.num + ":</b><br/>" + laptime;
+	        	}
+	        }
+	    });
+	});
+	});
+</script>
