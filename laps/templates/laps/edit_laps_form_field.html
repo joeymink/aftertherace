@@ -1,0 +1,57 @@
+{% load widget_tweaks %}
+	{% if field.label != 'Rider name' and field.label != 'User name' %}
+		<div class="row form-group">
+			<label for="{{ field.id_for_label }}" class="col-sm-2 control-label">{{ field.label }}</label>
+			<div
+				{% if field.errors %}
+					class="col-sm-2 has-error"
+				{% else %}
+					class="col-sm-2"
+				{% endif %}
+			>
+				{% render_field field class+="form-control" %}
+				{% for err in field.errors %}
+					<p class="text-danger">{{ err }}</p>
+				{% endfor %}
+			</div>
+			{% if not race.is_team %}
+				<div class="col-sm-8">
+				</div>
+		</div> <!-- end row -->
+			{% endif %}
+	{% endif %}
+
+	{% ifequal field.label 'Rider name' %}
+
+		<div
+			{% if field.errors %}
+				class="col-sm-2 has-error"
+			{% else %}
+				class="col-sm-2"
+			{% endif %}
+		>
+			{% render_field field class+="form-control" %}
+			{% for err in field.errors %}
+				<p class="text-danger">{{ err }}</p>
+			{% endfor %}
+		</div>
+	{% endifequal %}
+
+	{% ifequal field.label 'User name' %}
+		<div
+			{% if field.errors %}
+				class="col-sm-2 has-error"
+			{% else %}
+				class="col-sm-2"
+			{% endif %}
+		>
+			{% render_field field class+="form-control" %}
+			{% for err in field.errors %}
+				<p class="text-danger">{{ err }}</p>
+			{% endfor %}
+		</div>
+
+		<div class="col-sm-4">
+		</div>
+		</div> <!-- end row -->
+	{% endifequal %}

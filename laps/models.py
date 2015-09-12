@@ -2,6 +2,7 @@ from django.db import models
 from decimal import Decimal
 from datetime import datetime
 from django.conf import settings
+from django.contrib.auth import get_user_model
 
 # Machine
 
@@ -128,6 +129,7 @@ class Race(models.Model):
 	conditions = models.CharField(max_length=100)
 	num_laps = models.IntegerField(default=0)
 	user = models.ForeignKey(settings.AUTH_USER_MODEL)
+	is_team = models.BooleanField(default=False)
 
 	def __unicode__(self):
 		if not(self.track is None):
@@ -158,12 +160,30 @@ class Race(models.Model):
 	def get_laps(self):
 		return self.laps.values().order_by('num')
 
+	def rider_changes_by_lap(self):
+		changes = {}
+		for change in self.rider_changes.values():
+			changelapnum = change['num']
+			changes[changelapnum] = {}
+			if 'rider_name' in change:
+				print "found rider_name in change:"
+				print change
+				changes[changelapnum]['rider_name'] = change['rider_name']
+			if 'user_id' in change and change['user_id']:
+				changes[change['num']]['user'] = get_user_model().objects.get(pk=change['user_id'])
+		return changes
 
 def get_or_create_race(name=None, date=None, track=None, organization=None, machine_config=None, conditions=None):
 	q = Race.objects.filter(name=name, date_time=date, track=track, organization=organization)
 	if len(q) > 0:
 		return q[0]
 	return Race.objects.create(name=name, date_time=date, track=track, organization=organization, machine_config=machine_config, conditions=conditions)
+
+class RiderChange(models.Model):
+	race = models.ForeignKey(Race, related_name='rider_changes')
+	user = models.ForeignKey(settings.AUTH_USER_MODEL, null=True)
+	rider_name = models.CharField(max_length=100, null=True)
+	num = models.IntegerField(default=1)
 
 class Lap(models.Model):
 	race = models.ForeignKey(Race, related_name='laps')

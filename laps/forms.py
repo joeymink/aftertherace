@@ -1,6 +1,7 @@
 from django import forms
 from templatetags.lap_extras import format_lap_time
 from laps.models import Lap, Machine, Race, Racer, Track
+from django.contrib.auth import get_user_model
 
 class EditRaceForm(forms.Form):
 	name = forms.CharField(label='Name', max_length=100)
@@ -8,6 +9,7 @@ class EditRaceForm(forms.Form):
 	date_time = forms.DateTimeField(label="Date")
 	machine_name = forms.ChoiceField(label='Machine')
 	track_name = forms.ChoiceField(label='Track')
+	is_team = forms.BooleanField(label="Team Race", required=False)
 	num_laps = forms.IntegerField(label='# Laps', min_value=1)
 
 	def __init__(self, *args, **kwargs):
@@ -30,7 +32,10 @@ class EditLapsForm(forms.Form):
 	def __init__(self, *args, **kwargs):
 		self.num_laps = int(kwargs.pop('num_laps'))
 		laps = kwargs.pop('laps')
+		race = kwargs.pop('race')
+		changes_by_lap = race.rider_changes_by_lap()
 		super(EditLapsForm, self).__init__(*args, **kwargs)
+
 		for i in xrange(1, self.num_laps + 1):
 			lap = None
 			if not(laps is None):
@@ -44,6 +49,21 @@ class EditLapsForm(forms.Form):
 				required=False)
 			if not(lap is None):
 				self.fields["lap%d" % i].initial = format_lap_time(lap.time)
+			if race.is_team:
+				self.fields["rider_change_name_lap%d" % i] = forms.CharField(label='Rider name', required=False)
+				self.fields["rider_change_user_lap%d" % i] = forms.ChoiceField(label='User name', required=False)
+				if i in changes_by_lap:
+					if 'rider_name' in changes_by_lap[i]:
+						self.fields["rider_change_name_lap%d" % i].initial = changes_by_lap[i]['rider_name']
+					if 'user' in changes_by_lap[i]:
+						self.fields["rider_change_user_lap%d" % i].initial = changes_by_lap[i]['user'].username
+				self.set_choices(self.fields["rider_change_user_lap%d" % i])
+
+	def set_choices(self, field):
+		choices = [('', '')]
+		for u in get_user_model().objects.all().values('username').order_by('username'):
+			choices.append( (u['username'], u['username']) )
+		field.choices = choices
 
 	def get_lap_dict(self):
 		laps_dict = {}

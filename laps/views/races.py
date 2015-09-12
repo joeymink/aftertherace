@@ -4,7 +4,7 @@ from django.contrib.auth import get_user_model
 from django.db.models import Q
 from django.core.urlresolvers import reverse
 
-from laps.models import ConfigurationAttribute, Lap, Machine, MachineConfiguration, Race, Track
+from laps.models import ConfigurationAttribute, Lap, Machine, MachineConfiguration, Race, Track, RiderChange
 from laps.views import RacesByYear
 from laps.views.user_util import assert_user_logged_in
 from laps import forms, lapimport, util
@@ -65,6 +65,7 @@ def create_race(request, username):
 				race.organization = form.cleaned_data['organization']
 				race.machine_config = config
 				race.user = user
+				race.is_team = form.cleaned_data['is_team']
 				# If user hits back & returns to new race form,
 				# help them out by not creating a race twice or
 				# failing on uniqueness constraint:
@@ -123,6 +124,7 @@ def edit_race(request, username, race_id):
 				race.track = Track.objects.get(name=form.cleaned_data['track_name'])
 				race.num_laps = form.cleaned_data['num_laps']
 				race.organization = form.cleaned_data['organization']
+				race.is_team = form.cleaned_data['is_team']
 				if (race.machine_config is None) or not(race.machine_config.machine.name == form.cleaned_data['machine_name']):
 					# The machine was changed
 					machine = Machine.objects.get(name=form.cleaned_data['machine_name'], user=user)
@@ -143,6 +145,7 @@ def edit_race(request, username, race_id):
 def edit_race_laps(request, username, race_id):
 	user = assert_user_logged_in(username, request)
 	race = get_object_or_404(Race, pk=race_id)
+	changes = RiderChange.objects.filter(race=race)
 	if not(race.user == user):
 		raise PermissionDenied
 
@@ -153,8 +156,10 @@ def edit_race_laps(request, username, race_id):
 
 	if request.method == 'POST':
 		# TODO: include notification to say update was successful
-		form = forms.EditLapsForm(request.POST, num_laps=race.num_laps, laps=laps)
+		form = forms.EditLapsForm(request.POST, num_laps=race.num_laps, laps=laps, race=race)
 		if form.is_valid():
+			if race.is_team:
+				changes.delete()
 			lap_dict = form.get_lap_dict()
 			for lap_num in xrange(1, form.num_laps + 1): # TODO: Maybe delete all laps and recreate?
 				if not(lap_num in lap_dict) or not(lap_dict[lap_num]):	# no lap time given
@@ -178,7 +183,25 @@ def edit_race_laps(request, username, race_id):
 						Lap.objects.filter(race=race, num=lap_num).delete()
 						lap, created = Lap.objects.get_or_create(race=race, num=lap_num, time=lap_time_s)
 					lap.save()
+				if race.is_team:
+					fieldname = "rider_change_name_lap%d" % lap_num
+					if fieldname in request.POST:
+						rider_change_name = request.POST[fieldname]
+					fieldname = "rider_change_user_lap%d" % lap_num
+					if fieldname in request.POST:
+						rider_change_user = request.POST[fieldname]
+					if rider_change_name or rider_change_user:
+						print "found a change [%s, %s]" % (rider_change_name, rider_change_user)
+						change = RiderChange()
+						change.race = race
+						if rider_change_user:
+							change.user = get_user_model().objects.get(username=rider_change_user)
+						if rider_change_name:
+							change.rider_name = rider_change_name
+						change.num = lap_num
+						change.save()
+
 			return HttpResponseRedirect(reverse('laps:race', args=(username, race.id)))
 	else:
-		form = forms.EditLapsForm(num_laps=race.num_laps, laps=laps)
-	return render(request, 'laps/edit_laps.html', { 'form':form, 'race':race, 'racer':user.username })
+		form = forms.EditLapsForm(num_laps=race.num_laps, laps=laps, race=race)
+	return render(request, 'laps/edit_laps.html', { 'form':form, 'race':race, 'racer':user.username, 'users':get_user_model().objects.all() })

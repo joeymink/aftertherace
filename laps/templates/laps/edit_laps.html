@@ -7,14 +7,26 @@
 
 <h2>Edit Laps</h2>
 <form class="form-horizontal" action="{% url 'laps:edit_race_laps' user.username race.id %}?num_laps={{ form.num_laps }}" method="post">
-	<div class="col-sm-offset-2 col-sm-10">
-		<p class="text-info">
-			Enter lap times like <em>2:45:043</em>.
-		</p>
+	<div class="row">
+		<div class="col-sm-4">
+			<p class="text-info pull-right">
+				Enter lap times like <em>2:45:043</em>
+			</p>
+		</div>
+		{% if race.is_team %}
+			<div class="col-sm-8">
+				<p class="text-info">
+					Rider change? Enter name or select user
+				</p>
+			</div>
+		{% else %}
+			<div class="col-sm-8">
+			</div>
+		{% endif %}
 	</div>
 	{% csrf_token %}
 	{% for field in form %}
-		{% include "laps/default_form_field.html" %}
+		{% include "laps/edit_laps_form_field.html" %}
 	{% endfor %}
 	<div class="form-group">
 		<div class="col-sm-offset-2 col-sm-10">
