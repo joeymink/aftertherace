@@ -1,7 +1,5 @@
 {% include "laps/header.html" %}
 
-{% load lap_extras %}
-
 <h1>
 	<span class="glyphicon glyphicon-flag" aria-hidden="true"></span>
 	{{ race.name }}
@@ -63,18 +61,7 @@
 		<div class="panel panel-default">
 			<div class="panel-heading">Laps</div>
 			{% if race.get_laps|length > 0 %}
-				<table class="table table-striped table-hover">
-				{% for lap in race.get_laps %}
-					{% if race.best_lap_time == lap.time %}
-						<tr class="success">
-					{% else %}
-						<tr>
-					{% endif %}
-						<td>{{ lap.num }}</td>
-				    	<td>{{ lap.time|format_lap_time }}</td>
-				    </tr>
-				{% endfor %}
-				</table>
+				{% include "laps/race-lapstab.html" %}
 			{% else %}
 				<p class="text-muted text-center">No laps entered</p>
 			{% endif %}

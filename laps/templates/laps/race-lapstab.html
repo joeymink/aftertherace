@@ -1,0 +1,88 @@
+{% load lap_extras %}
+
+<div>
+
+  <!-- Nav tabs -->
+  <ul class="nav nav-tabs" role="tablist">
+    <li role="presentation" class="active">
+      <a href="#summary" aria-controls="summary" role="tab" data-toggle="tab">
+        Summary
+      </a>
+    </li>
+    <li role="presentation">
+      <a href="#all" aria-controls="#all" role="tab" data-toggle="tab">
+        All
+      </a>
+    </li>
+    {% if race.is_team %}
+      {% for rider in race.riders %}
+        <li role="presentation">
+          <a href="#{{ rider }}" aria-controls="{{ rider }}" role="tab" data-toggle="tab">
+            {{ rider }}
+          </a>
+        </li>
+      {% endfor %}
+    {% endif %}
+  </ul>
+
+  <!-- Tab panes -->
+  <div class="tab-content">
+    <div role="tabpanel" class="tab-pane active" id="summary">
+      <table class="table table-striped table-hover">
+        <tr>
+          <th>Best</th><td>{{ race.best_lap_time|format_lap_time }}</td>
+        </tr>
+        <tr>
+          <th>Average</th><td>{{ race.average_lap_time|format_lap_time }}</td>
+        </tr>
+        <tr>
+          <th>Worst</th><td>{{ race.worst_lap_time|format_lap_time }}</td>
+        </tr>
+      </table>
+    </div>
+    <div role="tabpanel" class="tab-pane" id="all">
+      <table class="table table-striped table-hover">
+        {% for lap in race.get_laps %}
+          {% if race.best_lap_time == lap.time %}
+            <tr class="success">
+          {% else %}
+            <tr>
+          {% endif %}
+            <td>{{ lap.num }}</td>
+            <td>{{ lap.time|format_lap_time }}</td>
+            </tr>
+        {% endfor %}
+      </table>
+    </div>
+    {% if race.is_team %}
+      {% for rider, riderlaps in race.laps_by_rider.iteritems %}
+        <div role="tabpanel" class="tab-pane" id="{{ rider }}">
+          <table class="table table-striped table-hover">
+            <tr>
+              <th>Laps raced</th><td>{{ riderlaps|length }}</td>
+            </tr>
+            <tr>
+              <th>Best</th><td>{{ riderlaps|best_lap }}</td>
+            </tr>
+            <tr>
+              <th>Average</th><td>{{ riderlaps|average_lap }}</td>
+            </tr>
+            <tr>
+              <th>Worst</th><td>{{ riderlaps|worst_lap }}</td>
+            </tr>
+          </table>
+
+          <table class="table table-striped table-hover">
+            {% for lap in riderlaps %}
+              <tr>
+                <td>{{ lap.num }}</td>
+                <td>{{ lap.time|format_lap_time }}</td>
+              </tr>
+            {% endfor %}
+          </table>
+        </div>
+      {% endfor %}
+    {% endif %}
+  </div>
+
+</div>

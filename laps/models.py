@@ -150,6 +150,15 @@ class Race(models.Model):
 				best = lap['time']
 		return best
 
+	def worst_lap_time(self):
+		worst = None
+		for lap in self.laps.values():
+			if worst is None:
+				worst = lap['time']
+			elif lap['time'] > worst:
+				worst = lap['time']
+		return worst
+
 	def average_lap_time(self):
 		lapsum = Decimal(0)
 		for lap in self.laps.values():
@@ -159,6 +168,21 @@ class Race(models.Model):
 
 	def get_laps(self):
 		return self.laps.values().order_by('num')
+
+	def riders(self):
+		print "in riders()"
+		riders = []
+		for change in self.rider_changes.values():
+			if 'user_id' in change and change['user_id']:
+				print "user_id was in change"
+				rider_name = get_user_model().objects.get(pk=change['user_id']).username
+				print "rider name is %s" % rider_name
+			elif 'rider_name' in change and change['rider_name']:
+				rider_name = change['rider_name']
+			print "rider_name is %s" % rider_name 
+			if not(rider_name in riders):
+				riders.append(rider_name)
+		return riders
 
 	def rider_changes_by_lap(self):
 		changes = {}
@@ -172,6 +196,19 @@ class Race(models.Model):
 			if 'user_id' in change and change['user_id']:
 				changes[change['num']]['user'] = get_user_model().objects.get(pk=change['user_id'])
 		return changes
+
+	def laps_by_rider(self):
+		result = {}
+		last_lap_processed = 10*1000
+		for change in RiderChange.objects.filter(race=self).order_by('-num'):
+			rider_name = change.get_rider_name()
+			if not(rider_name in result):
+				result[rider_name] = []
+			laps_vqs = Lap.objects.filter(race=self, num__gte=change.num, num__lt=last_lap_processed).order_by('num').values()
+			laps = [entry for entry in laps_vqs]
+			result[rider_name] = laps + result[rider_name]
+			last_lap_processed = change.num
+		return result
 
 def get_or_create_race(name=None, date=None, track=None, organization=None, machine_config=None, conditions=None):
 	q = Race.objects.filter(name=name, date_time=date, track=track, organization=organization)
