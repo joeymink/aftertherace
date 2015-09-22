@@ -41,3 +41,7 @@ def average_lap(laps_list):
 		lapsum = lapsum + lap['time']
 	numlaps = len(laps_list)
 	return format_lap_time(lapsum / (Decimal(numlaps)))
+
+@register.filter
+def idify(str):
+	return str.replace(' ', '_')

@@ -17,7 +17,7 @@
     {% if race.is_team %}
       {% for rider in race.riders %}
         <li role="presentation">
-          <a href="#{{ rider }}" aria-controls="{{ rider }}" role="tab" data-toggle="tab">
+          <a href="#{{ rider|idify }}" aria-controls="{{ rider|idify }}" role="tab" data-toggle="tab">
             {{ rider }}
           </a>
         </li>
@@ -34,9 +34,6 @@
         </tr>
         <tr>
           <th>Average</th><td>{{ race.average_lap_time|format_lap_time }}</td>
-        </tr>
-        <tr>
-          <th>Worst</th><td>{{ race.worst_lap_time|format_lap_time }}</td>
         </tr>
       </table>
     </div>
@@ -56,7 +53,7 @@
     </div>
     {% if race.is_team %}
       {% for rider, riderlaps in race.laps_by_rider.iteritems %}
-        <div role="tabpanel" class="tab-pane" id="{{ rider }}">
+        <div role="tabpanel" class="tab-pane" id="{{ rider|idify }}">
           <table class="table table-striped table-hover">
             <tr>
               <th>Laps raced</th><td>{{ riderlaps|length }}</td>
@@ -66,9 +63,6 @@
             </tr>
             <tr>
               <th>Average</th><td>{{ riderlaps|average_lap }}</td>
-            </tr>
-            <tr>
-              <th>Worst</th><td>{{ riderlaps|worst_lap }}</td>
             </tr>
           </table>
 
