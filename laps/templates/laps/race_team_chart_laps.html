@@ -56,7 +56,7 @@
             		var sec = parseInt(this.y % 60, 10);
             		var milli = parseInt((this.y % 1) * 1000, 10);
             		var laptime = min.toString() + ":" + pad(sec.toString(), 2) + ":" + pad(milli.toString(), 3);
-            		return "<b>Lap " + this.x.num + ":</b><br/>" + laptime;
+            		return laptime;
 	        	}
 	        }
 	    });

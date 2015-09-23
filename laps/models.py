@@ -162,7 +162,7 @@ class Race(models.Model):
 		for lap in laps:
 			if best_lap is None:
 				best_lap = lap['time']
-			elif lap < best_lap:
+			elif lap['time'] < best_lap:
 				best_lap = lap['time']
 		return best_lap
 
