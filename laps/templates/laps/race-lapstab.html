@@ -30,6 +30,9 @@
     <div role="tabpanel" class="tab-pane active" id="summary">
       <table class="table table-striped table-hover">
         <tr>
+          <th>Laps raced</th><td>{{ race.get_laps|length }}</td>
+        </tr>
+        <tr>
           <th>Best</th><td>{{ race.best_lap_time|format_lap_time }}</td>
         </tr>
         <tr>
