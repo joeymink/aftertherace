@@ -44,18 +44,22 @@ class AugmentedUser:
 	def tracks(self):
 		return Track.objects.filter(races__user=self.user).order_by('name').distinct()
 
+	def fastest_race_at_track(self, track):
+		fastest_race = None
+		for race in Race.objects.filter(user=self.user, track=track):
+			best_lap = race.best_lap_time_for(self.user)
+			if best_lap is None:
+				continue
+			if fastest_race is None:
+				fastest_race = race
+			elif best_lap < fastest_race.best_lap_time_for(self.user.username):
+				fastest_race = race
+		return fastest_race
+
 	def fastest_races(self):
 		races = []
 		for track in self.tracks():
-			fastest_race = None
-			for race in Race.objects.filter(user=self.user, track=track):
-				if race.best_lap_time() is None:
-					continue
-				if fastest_race is None:
-					fastest_race = race
-				elif race.best_lap_time() < fastest_race.best_lap_time():
-					fastest_race = race
-			races.append(fastest_race)
+			races.append(self.fastest_race_at_track(track))
 		return races
 
 def racer(request, username):
@@ -126,8 +130,8 @@ class LapTrendAJAXView(JSONResponseMixin, DetailView):
 		}
 		for race in races:
 			if race.laps.count() > 0:
-				result['best'].append(race.best_lap_time())
-				result['avg'].append(race.average_lap_time())
+				result['best'].append(race.best_lap_time_for(username))
+				result['avg'].append(race.average_lap_time_for(username))
 				result['race'].append({
 					u'date': race.date_time,
 					u'name': race.name,

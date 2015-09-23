@@ -150,6 +150,22 @@ class Race(models.Model):
 				best = lap['time']
 		return best
 
+	def best_lap_time_for(self, name):
+		if self.is_team is None or not(self.is_team):
+			return self.best_lap_time()
+
+		laps_by_rider = self.laps_by_rider()
+		if not(name in laps_by_rider):
+			return None
+		laps = laps_by_rider[name]
+		best_lap = None
+		for lap in laps:
+			if best_lap is None:
+				best_lap = lap['time']
+			elif lap < best_lap:
+				best_lap = lap['time']
+		return best_lap
+
 	def worst_lap_time(self):
 		worst = None
 		for lap in self.laps.values():
@@ -164,6 +180,21 @@ class Race(models.Model):
 		for lap in self.laps.values():
 			lapsum = lapsum + lap['time']
 		numlaps = len(self.laps.values())
+		return lapsum / (Decimal(numlaps))
+
+	def average_lap_time_for(self, name):
+		if self.is_team is None or not(self.is_team):
+			return self.average_lap_time()
+
+		laps_by_rider = self.laps_by_rider()
+		if not(name in laps_by_rider):
+			return None
+		laps = laps_by_rider[name]
+
+		lapsum = Decimal(0)
+		for lap in laps:
+			lapsum = lapsum + lap['time']
+		numlaps = len(laps)
 		return lapsum / (Decimal(numlaps))
 
 	def get_laps(self):
